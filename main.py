@@ -4,7 +4,7 @@ class BaseNode:
         self.name = name
     
     def execute(self, input_data: str):
-        raise NotImplementedError('Each node must implement the execution method.')
+        raise NotImplementedError('Each node must implement the execute method.')
 
 
 class UppercaseNode(BaseNode):
