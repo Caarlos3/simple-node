@@ -12,6 +12,31 @@ class UppercaseNode(BaseNode):
     def execute(self, input_data: str):
         print(f'Executing node {self.name} to convert to uppercase.')
         return input_data.upper()  
+    
+class ReverseNode(BaseNode):
+
+    def execute(self, input_data: str):
+        print(f'Executing node {self.name} to reverse the string.')
+        return input_data[::-1]
+
+class TrimNode(BaseNode):
+
+    def execute(self, input_data: str):
+        print(f'Executing node {self.name} to trim whitespace.')
+        return input_data.strip()
+
+class ReplaceNode(BaseNode):
+    
+    def __init__(self, name: str, old: str, new: str):
+        super().__init__(name)
+        self.old = old
+        self.new = new
+
+    def execute(self, input_data: str) -> str:
+        print(f'Executing node {self.name} to replace "{self.old}" with "{self.new}".')
+        return input_data.replace(self.old, self.new)
+
+
 
 class WorkflowEngine:
 
