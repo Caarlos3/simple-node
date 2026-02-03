@@ -44,9 +44,15 @@ class FileNode(BaseNode):
     
     def execute(self, input_data: str) -> str:
         print(f'Executing node {self.name} to read from file: {self.file_path}.')
-        with open(self.file_path, 'r', encoding= "utf-8") as file:
-            content = file.read()
-        return content
+        try:
+            with open(self.file_path, 'r', encoding= "utf-8") as file:
+                content = file.read()
+            return content
+        except FileNotFoundError:
+            return(f'File not found: {self.file_path}.')
+        except Exception as e:
+            return(f'An error occurred while reading the file: {e}')
+      
 
 
 class WorkflowEngine:
