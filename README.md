@@ -1,5 +1,9 @@
 # 🤖 Simple Node AI Engine
 
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=flat-square&logo=github)
+![Python Version](https://img.shields.io/badge/python-3.12-blue?style=flat-square&logo=python)
+![Tests](https://img.shields.io/badge/tests-8%20passed-success?style=flat-square&logo=pytest)
+
 A modular workflow engine built with Python to understand how node-based automation systems work. The goal is to create an AI-first automation platform where tasks can be chained through customizable nodes.
 
 ## ✨ Current Features
