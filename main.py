@@ -36,6 +36,23 @@ class ReplaceNode(BaseNode):
         print(f'Executing node {self.name} to replace "{self.old}" with "{self.new}".')
         return input_data.replace(self.old, self.new)
 
+class FileNode(BaseNode):
+
+    def __init__(self, name: str, file_path: str):
+        super().__init__(name)
+        self.file_path = file_path
+    
+    def execute(self, input_data: str) -> str:
+        print(f'Executing node {self.name} to read from file: {self.file_path}.')
+        try:
+            with open(self.file_path, 'r', encoding= "utf-8") as file:
+                content = file.read()
+            return content
+        except FileNotFoundError:
+            return(f'File not found: {self.file_path}.')
+        except Exception as e:
+            return(f'An error occurred while reading the file: {e}')
+      
 
 
 class WorkflowEngine:
