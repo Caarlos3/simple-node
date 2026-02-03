@@ -1,0 +1,4 @@
+Nombre: Carlos Ramírez Torres
+Profesión: Full Stack Developer con transción a IA Developer
+Skills: JavaScript, React, Python, Java, Node.js, SQL, APIRest
+Proyectos: simple-node, Manga.bibl, Fitapp
