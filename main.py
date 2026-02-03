@@ -36,7 +36,7 @@ class ReplaceNode(BaseNode):
         print(f'Executing node {self.name} to replace "{self.old}" with "{self.new}".')
         return input_data.replace(self.old, self.new)
 
-class FileNode(BaseNode):
+class FileReadNode(BaseNode):
 
     def __init__(self, name: str, file_path: str):
         super().__init__(name)

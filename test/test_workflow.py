@@ -1,5 +1,5 @@
 import pytest
-from main import WorkflowEngine, UppercaseNode, ReverseNode, TrimNode, ReplaceNode, FileNode
+from main import WorkflowEngine, UppercaseNode, ReverseNode, TrimNode, ReplaceNode, FileReadNode
 
 
 def test_workflow_engine():
@@ -38,15 +38,21 @@ def test_replace_node():
     result = replace_node.execute(input_data)
     assert result == "Hello Boss"
 
-def test_file_node_success():
-    file_node = FileNode("File Node", "my_info.txt")
+def test_file_read_node_success():
+    file_node = FileReadNode("File Node", "my_info.txt")
     result = file_node.execute("")
     assert "Carlos" in result
 
-def test_file_node_error():
-    file_node = FileNode("File Node", "non_existent_file.txt")
+def test_file_read_node_error():
+    file_node = FileReadNode("File Node", "non_existent_file.txt")
     result = file_node.execute("")
     assert result == "File not found: non_existent_file.txt."
+
+def test_file_read_node_empty():
+    node = FileReadNode("Empty File Node", "empty.txt")
+    assert node.execute("") == ""
+
+
 
 
 
