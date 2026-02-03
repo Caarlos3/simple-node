@@ -30,7 +30,7 @@ The engine can already create workflows and process data through multiple node t
 
 1) Clone the repository and enter the project folder:
 
-git clone https://github.com/yourusername/simple-node.git
+git clone https://github.com/Caarlos3/simple-node.git
 cd simple-node
 
 2) Create and activate a virtual environment:
