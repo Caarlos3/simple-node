@@ -63,24 +63,38 @@ class FileReadNode(BaseNode):
 
 class LLMNode(BaseNode):
 
-    def __init__(self, name: str, model: str, system_prompt: str):
+    """
+    Node that processes input text using Abacus AI RouteLLM models.
+    It requires a valid ROUTELLM_API_KEY in the .env file.
+    """
+
+    def __init__(self, name: str, model: str, system_prompt: str, temperature: float = 0.7):
         super().__init__(name)
         self.model = model
         self.system_prompt = system_prompt
+        self.temperature = temperature
+
+        api_key = os.getenv("ROUTELLM_API_KEY")
+        if not api_key:
+            raise ValueError("ROUTELLM_API_KEY not found in environment variables. Please set it in the .env file.")
+        
+
         self.client = OpenAI(
             base_url="https://routellm.abacus.ai/v1",
-            api_key=os.getenv("ROUTELLM_API_KEY")
+            api_key=api_key
             )
         
     def execute(self, input_data: str) -> str:
-        print(f'Executing node {self.name} to process input with LLM model: {self.model}.')
+        print(f'Executing node {self.name} to process input with LLM model: {self.model}, temperature: {self.temperature}.')
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": f"Based on the information provided, please answer the following question: {input_data}"}
-                ]
+                ],
+                temperature=self.temperature
+
             )
             return response.choices[0].message.content
         except Exception as e:
