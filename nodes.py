@@ -6,8 +6,19 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from engine import WorkflowEngine
 
+"""
+Workflow Nodes Module.
+Contains the base interface and concrete implementations of processing nodes.
+Each node performs a specific task and can interact with the global engine context.
+"""
+
 
 class BaseNode:
+
+    """
+    Abstract base class for all workflow nodes.
+    Defines the contract that every node must follow.
+    """
 
     def __init__(self, name: str):
         self.name = name
@@ -18,19 +29,19 @@ class BaseNode:
 
 class UppercaseNode(BaseNode):
 
-    def execute(self, input_data: str, engine):
+    def execute(self, input_data: str, engine: 'WorkflowEngine'):
         print(f'Executing node {self.name} to convert to uppercase.')
         return input_data.upper()  
     
 class ReverseNode(BaseNode):
 
-    def execute(self, input_data: str, engine):
+    def execute(self, input_data: str, engine: 'WorkflowEngine'):
         print(f'Executing node {self.name} to reverse the string.')
         return input_data[::-1]
 
 class TrimNode(BaseNode):
 
-    def execute(self, input_data: str, engine):
+    def execute(self, input_data: str, engine: 'WorkflowEngine'):
         print(f'Executing node {self.name} to trim whitespace.')
         return input_data.strip()
 
@@ -41,7 +52,7 @@ class ReplaceNode(BaseNode):
         self.old = old
         self.new = new
 
-    def execute(self, input_data: str, engine) -> str:
+    def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
         print(f'Executing node {self.name} to replace "{self.old}" with "{self.new}".')
         return input_data.replace(self.old, self.new)
 
@@ -51,7 +62,7 @@ class FileReadNode(BaseNode):
         super().__init__(name)
         self.file_path = file_path
     
-    def execute(self, input_data: str, engine) -> str:
+    def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
         print(f'Executing node {self.name} to read from file: {self.file_path}.')
         try:
             with open(self.file_path, 'r', encoding= "utf-8") as file:
@@ -66,8 +77,9 @@ class FileReadNode(BaseNode):
 class LLMNode(BaseNode):
 
     """
-    Node that processes input text using Abacus AI RouteLLM models.
-    It requires a valid ROUTELLM_API_KEY in the .env file.
+    AI Processing Node.
+    Connects to Abacus RouteLLM to process text. It dynamically injects 
+    context from the engine's shared memory into the system prompt.
     """
 
     def __init__(self, name: str, model: str, system_prompt: str, temperature: float = 0.7):
@@ -86,7 +98,11 @@ class LLMNode(BaseNode):
             api_key=api_key
             )
         
-    def execute(self, input_data: str, engine) -> str:
+    def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
+
+        if engine.context.get('needs_ai') == False:
+            return input_data
+        
         print(f'Executing node {self.name} to process input with LLM model: {self.model}, temperature: {self.temperature}.')
         try:
             response = self.client.chat.completions.create(
@@ -101,3 +117,28 @@ class LLMNode(BaseNode):
             return response.choices[0].message.content
         except Exception as e:
             return f'An error occurred while processing with LLM: {e}'
+        
+
+class RouterNode(BaseNode):
+
+    """
+    Decision-making node.
+    Analyzes user input to determine if it needs AI processing or 
+    if it can be resolved with a static response, optimizing API credit usage.
+    """
+
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.greetings = ["hello", "hi", "hey", "greetings", "quien eres", "who are you"]
+
+    def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
+        print(f'Executing node {self.name} to route based on input.')
+        clean_input = input_data.lower().strip()
+
+        if any(greet in clean_input for greet in self.greetings):
+            engine.context['needs_ai'] = False
+            return "Hello! I'm Carlos virtual assitent ¿How can I assist you today?"
+        print("No greeting detected, routing to LLMNode.")
+        engine.context['need_ai'] = True
+        return input_data
+    
