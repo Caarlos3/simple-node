@@ -1,4 +1,7 @@
 from nodes import BaseNode
+import logging
+
+logger = logging.getLogger(__name__)
 
 """
 Workflow Engine Module.
