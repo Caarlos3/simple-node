@@ -1,10 +1,13 @@
 import os
+import logging
 from openai import OpenAI
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from engine import WorkflowEngine
+
+logger = logging.getLogger(__name__)
 
 """
 Workflow Nodes Module.
@@ -30,19 +33,19 @@ class BaseNode:
 class UppercaseNode(BaseNode):
 
     def execute(self, input_data: str, engine: 'WorkflowEngine'):
-        print(f'Executing node {self.name} to convert to uppercase.')
+        logger.info(f'Executing node {self.name} to convert to uppercase.')
         return input_data.upper()  
     
 class ReverseNode(BaseNode):
 
     def execute(self, input_data: str, engine: 'WorkflowEngine'):
-        print(f'Executing node {self.name} to reverse the string.')
+        logger.info(f'Executing node {self.name} to reverse the string.')
         return input_data[::-1]
 
 class TrimNode(BaseNode):
 
     def execute(self, input_data: str, engine: 'WorkflowEngine'):
-        print(f'Executing node {self.name} to trim whitespace.')
+        logger.info(f'Executing node {self.name} to trim whitespace.')
         return input_data.strip()
 
 class ReplaceNode(BaseNode):
@@ -53,7 +56,7 @@ class ReplaceNode(BaseNode):
         self.new = new
 
     def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
-        print(f'Executing node {self.name} to replace "{self.old}" with "{self.new}".')
+        logger.info(f'Executing node {self.name} to replace "{self.old}" with "{self.new}".')
         return input_data.replace(self.old, self.new)
 
 class FileReadNode(BaseNode):
@@ -63,15 +66,17 @@ class FileReadNode(BaseNode):
         self.file_path = file_path
     
     def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
-        print(f'Executing node {self.name} to read from file: {self.file_path}.')
+        logger.info(f'Executing node {self.name} to read from file: {self.file_path}.')
         try:
             with open(self.file_path, 'r', encoding= "utf-8") as file:
                 content = file.read()
                 engine.context['file_content'] = content
             return input_data
         except FileNotFoundError:
+            logger.error(f'File not found: {self.file_path}.')
             return(f'File not found: {self.file_path}.')
         except Exception as e:
+            logger.error(f'An error occurred while reading the file: {e}.')
             return(f'An error occurred while reading the file: {e}')
 
 class LLMNode(BaseNode):
@@ -103,7 +108,7 @@ class LLMNode(BaseNode):
         if engine.context.get('needs_ai') == False:
             return input_data
         
-        print(f'Executing node {self.name} to process input with LLM model: {self.model}, temperature: {self.temperature}.')
+        logger.info(f'Executing node {self.name} to process input with LLM model: {self.model}, temperature: {self.temperature}.')
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
@@ -116,6 +121,7 @@ class LLMNode(BaseNode):
             )
             return response.choices[0].message.content
         except Exception as e:
+            logger.error(f'An error occurred while processing with LLM: {e}.')
             return f'An error occurred while processing with LLM: {e}'
         
 
@@ -132,13 +138,13 @@ class RouterNode(BaseNode):
         self.greetings = ["hello", "hi", "hey", "greetings", "quien eres", "who are you"]
 
     def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
-        print(f'Executing node {self.name} to route based on input.')
+        logger.info(f'Executing node {self.name} to route based on input.')
         clean_input = input_data.lower().strip()
 
         if any(greet in clean_input for greet in self.greetings):
             engine.context['needs_ai'] = False
             return "Hello! I'm Carlos virtual assitent ¿How can I assist you today?"
-        print("No greeting detected, routing to LLMNode.")
+        logger.info("No greeting detected, routing to LLMNode.")
         engine.context['need_ai'] = True
         return input_data
     
