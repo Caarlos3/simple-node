@@ -179,3 +179,28 @@ class RouterNode(BaseNode):
         engine.context['need_ai'] = True
         return input_data
     
+
+def create_node_from_dict(data: dict) -> BaseNode:
+    node_type = data['type']
+    node_id = data['id']
+    params = data.get('params', {})
+
+    node_classes = {
+        'UppercaseNode': UppercaseNode,
+        'ReverseNode': ReverseNode,
+        'TrimNode': TrimNode,
+        'ReplaceNode': ReplaceNode,
+        'FileReadNode': FileReadNode,
+        'LLMNode': LLMNode,
+        'RouterNode': RouterNode
+    }
+
+    if node_type not in node_classes:
+        raise ValueError(f"Unknown node type: {node_type}")
+    
+    if node_type in ['ReplaceNode', 'LLMNode', 'FileReadNode']:
+        return node_classes[node_type](name=node_id.replace("_", "").title(), **params)
+    else:
+        return node_classes[node_type](name=node_id.replace("_", "").title())
+    
+       

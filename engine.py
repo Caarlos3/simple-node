@@ -1,4 +1,4 @@
-from nodes import BaseNode
+from nodes import BaseNode, create_node_from_dict
 import logging
 import json
 
@@ -55,3 +55,18 @@ class WorkflowEngine:
                 'to': node_ids[i + 1]
             })
         return connections
+    
+    @classmethod
+    def load_from_json(cls, file_path: str) -> 'WorkflowEngine':
+        """Loads a workflow configuration from a JSON file and constructs the engine."""
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        engine = cls()
+       
+        for node_data in data['nodes']:
+            node = create_node_from_dict(node_data)
+            engine.add_node(node)
+
+        logger.info(f'Workflow loaded from {file_path} successfully.')
+        return engine

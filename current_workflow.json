@@ -1,5 +1,5 @@
 {
-    "workflow_name": "AI Greeting Treansletor",
+    "workflow_name": "Exported Workflow",
     "nodes": [
         {
             "id": "router",
@@ -11,7 +11,8 @@
             "type": "FileReadNode",
             "params": {
                 "file_path": "my_info.txt"
-        }},
+            }
+        },
         {
             "id": "llm",
             "type": "LLMNode",
@@ -19,9 +20,9 @@
                 "model": "abacusai/dreamina",
                 "system_prompt": "You are the professional AI assistant for Carlos, a Full Stack Developer.",
                 "temperature": 0.7
-        }}
+            }
+        }
     ],
-
     "connections": [
         {
             "from": "router",
