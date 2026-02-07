@@ -4,3 +4,12 @@
 2026-02-06 18:11:36,203 - INFO - Executing node LLM Processor to process input with LLM model: abacusai/dreamina, temperature: 0.7.
 2026-02-06 18:11:36,666 - INFO - HTTP Request: POST https://routellm.abacus.ai/v1/chat/completions "HTTP/1.1 400 Bad Request"
 2026-02-06 18:11:36,667 - ERROR - An error occurred while processing with LLM: Error code: 400 - {'success': False, 'error': 'You have no remaining credits to use the LLM apis.'}.
+2026-02-07 15:19:24,428 - INFO - Workflow saved to current_workflow.json successfully.
+2026-02-07 15:36:43,544 - INFO - Workflow loaded from workflow_example.json successfully.
+2026-02-07 15:36:43,544 - INFO - Executing node Router to route based on input.
+2026-02-07 15:36:43,544 - INFO - No greeting detected, routing to LLMNode.
+2026-02-07 15:36:43,544 - INFO - Executing node Reader to read from file: my_info.txt.
+2026-02-07 15:36:43,544 - INFO - Executing node Llm to process input with LLM model: abacusai/dreamina, temperature: 0.7.
+2026-02-07 15:36:44,555 - INFO - HTTP Request: POST https://routellm.abacus.ai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+2026-02-07 15:36:44,556 - ERROR - An error occurred while processing with LLM: Error code: 400 - {'success': False, 'error': 'You have no remaining credits to use the LLM apis.'}.
+2026-02-07 15:36:44,557 - INFO - Workflow saved to current_workflow.json successfully.

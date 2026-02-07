@@ -28,6 +28,13 @@ class BaseNode:
     
     def execute(self, input_data: str, engine: 'WorkflowEngine'):
         raise NotImplementedError('Each node must implement the execute method.')
+    
+    def to_dict(self):
+        return {
+            'id': self.name.lower().replace(" ", "_"),
+            'type': self.__class__.__name__,
+            'params': {}
+        }
 
 
 class UppercaseNode(BaseNode):
@@ -58,6 +65,14 @@ class ReplaceNode(BaseNode):
     def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
         logger.info(f'Executing node {self.name} to replace "{self.old}" with "{self.new}".')
         return input_data.replace(self.old, self.new)
+    
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['params'] = {
+            'old': self.old,
+            'new': self.new
+        }
+        return data
 
 class FileReadNode(BaseNode):
 
@@ -78,6 +93,13 @@ class FileReadNode(BaseNode):
         except Exception as e:
             logger.error(f'An error occurred while reading the file: {e}.')
             return(f'An error occurred while reading the file: {e}')
+    
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['params'] = {
+            'file_path': self.file_path
+        }
+        return data
 
 class LLMNode(BaseNode):
 
@@ -123,6 +145,15 @@ class LLMNode(BaseNode):
         except Exception as e:
             logger.error(f'An error occurred while processing with LLM: {e}.')
             return f'An error occurred while processing with LLM: {e}'
+    
+    def to_dict(self) -> dict:
+       data = super().to_dict()
+       data['params'] = {
+           'model': self.model,
+           'system_prompt': self.system_prompt,
+           'temperature': self.temperature
+       }
+       return data
         
 
 class RouterNode(BaseNode):
@@ -148,3 +179,28 @@ class RouterNode(BaseNode):
         engine.context['need_ai'] = True
         return input_data
     
+
+def create_node_from_dict(data: dict) -> BaseNode:
+    node_type = data['type']
+    node_id = data['id']
+    params = data.get('params', {})
+
+    node_classes = {
+        'UppercaseNode': UppercaseNode,
+        'ReverseNode': ReverseNode,
+        'TrimNode': TrimNode,
+        'ReplaceNode': ReplaceNode,
+        'FileReadNode': FileReadNode,
+        'LLMNode': LLMNode,
+        'RouterNode': RouterNode
+    }
+
+    if node_type not in node_classes:
+        raise ValueError(f"Unknown node type: {node_type}")
+    
+    if node_type in ['ReplaceNode', 'LLMNode', 'FileReadNode']:
+        return node_classes[node_type](name=node_id.replace("_", "").title(), **params)
+    else:
+        return node_classes[node_type](name=node_id.replace("_", "").title())
+    
+       

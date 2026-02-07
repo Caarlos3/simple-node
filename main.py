@@ -29,29 +29,12 @@ if __name__ == "__main__":
 
     # Initialize the engine and define the intelligent pipeline
 
-    with open("my_info.txt", "r", encoding="utf-8") as f:
-        context = f.read()
-
-    engine = WorkflowEngine()
-
-    router = RouterNode(name="Input Router")
-
-    reader = FileReadNode(name="File Reader", file_path="my_info.txt")
-    
-    ai_node = LLMNode(
-        name="LLM Processor",
-        model="abacusai/dreamina",
-        system_prompt= "You are the professional AI assistant for Carlos, a Full Stack Developer."
-    )
-    engine.add_node(router)
-    engine.add_node(reader)
-    engine.add_node(ai_node)
-
+    engine = WorkflowEngine.load_from_json("workflow_example.json")
 
     question = "Can you provide a brief summary of Carlos's professional background?"
     answer = engine.run(question)
-    print("AI Response:")
-    print(answer)
+    print("AI Response (loaded from JSON):", answer)
+    engine.save_to_json("current_workflow.json")
 
     
 
