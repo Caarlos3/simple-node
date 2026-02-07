@@ -1,0 +1,35 @@
+{
+    "workflow_name": "AI Greeting Treansletor",
+    "nodes": [
+        {
+            "id": "router",
+            "type": "RouterNode",
+            "params": {}
+        },
+        {
+            "id": "reader",
+            "type": "FileReaderNode",
+            "params": {
+                "file_path": "my_info.txt"
+        }},
+        {
+            "id": "llm",
+            "type": "LLMNode",
+            "params": {
+                "model": "abacusai/dreamina",
+                "system_prompt": "You are the professional AI assistant for Carlos, a Full Stack Developer.",
+                "temperature": 0.7
+        }}
+    ],
+
+    "connections": [
+        {
+            "from": "router",
+            "to": "reader"
+        },
+        {
+            "from": "reader",
+            "to": "llm"
+        }
+    ]
+}
