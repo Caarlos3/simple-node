@@ -49,9 +49,7 @@ if __name__ == "__main__":
 
 
     question = "Can you provide a brief summary of Carlos's professional background?"
-    answer = engine.run(question)
-    print("AI Response:")
-    print(answer)
+    engine.save_to_json("current_workflow.json")
 
     
 
