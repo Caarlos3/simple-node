@@ -2,4 +2,5 @@ venv/
 __pycache__/
 .DS_Store
 .env
-logs/*.log
+logs/
+current_workflow.json

@@ -1,7 +1,6 @@
 import os
 import logging
 from openai import OpenAI
-from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -198,9 +197,11 @@ def create_node_from_dict(data: dict) -> BaseNode:
     if node_type not in node_classes:
         raise ValueError(f"Unknown node type: {node_type}")
     
+    readable_name = node_id.replace("_", " ").title()
+    
     if node_type in ['ReplaceNode', 'LLMNode', 'FileReadNode']:
-        return node_classes[node_type](name=node_id.replace("_", "").title(), **params)
+        return node_classes[node_type](name=readable_name, **params)
     else:
-        return node_classes[node_type](name=node_id.replace("_", "").title())
+        return node_classes[node_type](name=readable_name)
     
        

@@ -1,9 +1,8 @@
 import logging
 import os
 from dotenv import load_dotenv
-from openai import OpenAI
 from engine import WorkflowEngine
-from nodes import LLMNode, FileReadNode, RouterNode
+
 load_dotenv()
 
 if not os.path.exists("logs"):
@@ -14,7 +13,7 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
         logging.FileHandler("logs/app.log"),
-        logging.StreamHandler()
+        logging.StreamHandler(),
     ])
 logger = logging.getLogger(__name__)
 

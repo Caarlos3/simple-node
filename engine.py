@@ -1,6 +1,6 @@
-from nodes import BaseNode, create_node_from_dict
 import logging
 import json
+from nodes import BaseNode, create_node_from_dict 
 
 
 logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ class WorkflowEngine:
             current_data = node.execute(current_data, self)
         return current_data
     
-    def save_to_json(self, file_path: str):
+    def save_to_json(self, file_path: str) -> None:
         """Serializes the current workflow configuration and context to a JSON file."""
         workflow_data = {
             'workflow_name': 'Exported Workflow',
@@ -45,7 +45,7 @@ class WorkflowEngine:
             json.dump(workflow_data, f, indent=4, ensure_ascii=False)
         logger.info(f'Workflow saved to {file_path} successfully.')
 
-    def _generate_connections(self):
+    def _generate_connections(self) -> list[dict]:
         """Generates a list of connections between nodes based on their order."""
         connections = []
         node_ids = [node.to_dict()['id'] for node in self.nodes]
