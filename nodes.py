@@ -175,7 +175,7 @@ class RouterNode(BaseNode):
             engine.context['needs_ai'] = False
             return "Hello! I'm Carlos virtual assitent ¿How can I assist you today?"
         logger.info("No greeting detected, routing to LLMNode.")
-        engine.context['need_ai'] = True
+        engine.context['needs_ai'] = True
         return input_data
     
 
