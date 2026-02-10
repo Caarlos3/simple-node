@@ -8,8 +8,19 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+"""
+Workflow Nodes Module.
+Contains the base interface and concrete implementations of processing nodes.
+Each node performs a specific task and can interact with the global engine context.
+"""
+
 
 class BaseNode:
+
+    """
+    Abstract base class for all workflow nodes.
+    Defines the contract that every node must follow.
+    """
 
     def __init__(self, name: str):
         self.name = name
@@ -91,6 +102,12 @@ class FileReadNode(BaseNode):
 
 class LLMNode(BaseNode):
 
+    """
+    AI Processing Node.
+    Connects to Abacus RouteLLM to process text. It dynamically injects 
+    context from the engine's shared memory into the system prompt.
+    """
+
     def __init__(self, name: str, model: str, system_prompt: str, temperature: float = 0.7):
         super().__init__(name)
         self.model = model
@@ -139,6 +156,12 @@ class LLMNode(BaseNode):
         
 
 class RouterNode(BaseNode):
+
+    """
+    Decision-making node.
+    Analyzes user input to determine if it needs AI processing or 
+    if it can be resolved with a static response, optimizing API credit usage.
+    """
 
     def __init__(self, name: str):
         super().__init__(name)
