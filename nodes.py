@@ -118,27 +118,27 @@ class LLMNode(BaseNode):
         if not api_key:
             raise ValueError("ROUTELLM_API_KEY not found in environment variables. Please set it in the .env file.")
         
-
         self.client = OpenAI(
             base_url="https://routellm.abacus.ai/v1",
             api_key=api_key
-            )
+        )
         
     def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
-
         if engine.context.get('needs_ai') == False:
             return input_data
         
-        logger.info(f'Executing node {self.name} to process input with LLM model: {self.model}, temperature: {self.temperature}.')
+        context_info = engine.context.get('file_content', 'No hay información adicional disponible.')
+        
+        logger.info(f'Executing node {self.name} with context injection from file.')
+        
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
-                    {"role": "system", "content": self.system_prompt},
-                    {"role": "user", "content": f"Based on the information provided, please answer the following question: {input_data}"}
+                    {"role": "system", "content": f"{self.system_prompt}\n\n--- CONTEXTO RELEVANTE ---\n{context_info}"},
+                    {"role": "user", "content": f"Pregunta: {input_data}"}
                 ],
                 temperature=self.temperature
-
             )
             return response.choices[0].message.content
         except Exception as e:
@@ -173,7 +173,8 @@ class RouterNode(BaseNode):
 
         if any(greet in clean_input for greet in self.greetings):
             engine.context['needs_ai'] = False
-            return "Hello! I'm Carlos virtual assitent ¿How can I assist you today?"
+            return "Hello! I'm Carlos virtual assistant. ¿How can I assist you today?"
+        
         logger.info("No greeting detected, routing to LLMNode.")
         engine.context['needs_ai'] = True
         return input_data
@@ -203,5 +204,3 @@ def create_node_from_dict(data: dict) -> BaseNode:
         return node_classes[node_type](name=readable_name, **params)
     else:
         return node_classes[node_type](name=readable_name)
-    
-       
