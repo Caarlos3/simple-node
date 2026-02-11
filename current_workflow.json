@@ -17,9 +17,9 @@
             "id": "llm",
             "type": "LLMNode",
             "params": {
-                "model": "abacusai/dreamina",
+                "model": "gpt-4o-mini",
                 "system_prompt": "You are the professional AI assistant for Carlos, a Full Stack Developer.",
-                "temperature": 0.7
+                "temperature": 0.3
             }
         }
     ],
