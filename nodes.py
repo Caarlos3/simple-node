@@ -1,5 +1,6 @@
 import os
 import logging
+import requests
 from openai import OpenAI
 from typing import TYPE_CHECKING
 
@@ -128,14 +129,15 @@ class LLMNode(BaseNode):
             return input_data
         
         context_info = engine.context.get('file_content', 'No hay información adicional disponible.')
+        web_context = engine.context.get('Web Search', 'No encontrada busqueda' )
         
-        logger.info(f'Executing node {self.name} with context injection from file.')
+        logger.info(f'Executing node {self.name} with multi-source context (file + web).')
         
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
-                    {"role": "system", "content": f"{self.system_prompt}\n\n--- CONTEXTO RELEVANTE ---\n{context_info}"},
+                    {"role": "system", "content": f"{self.system_prompt}\n\n--- CONTEXTO DESDE ARCHIVO ---\n{context_info}\n\n---CONTEXTO DESDE WEB---\n{web_context}"},
                     {"role": "user", "content": f"Pregunta: {input_data}"}
                 ],
                 temperature=self.temperature
@@ -153,7 +155,75 @@ class LLMNode(BaseNode):
            'temperature': self.temperature
        }
        return data
+    
+
+class WebSearchNode(BaseNode):
+
+    def __init__(self, name:str, query_prefix: str = "", max_results: int = 5):
+        super().__init__(name)
+        self.query_prefix = query_prefix
+        self.max_results = max_results
         
+        api_key = os.getenv("TAVILY_API_KEY")
+        if not api_key:
+            raise ValueError("TAVILY_API_KEY not found in environment variables. Please set it in the .env file.")
+        
+        self.api_key = api_key
+        self.base_url = "https://api.tavily.com/search"
+
+    def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
+        query = f"{self.query_prefix} {input_data}".strip()
+        logger.info(f'Executing node {self.name} to perform web search with query: {query}')
+        payload = {
+            "query": query,
+            "max_results": self.max_results,
+            "search_depth": "basic",
+        }
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
+        try:
+            response = requests.post(self.base_url,json=payload, headers=headers, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            results = data.get("results", [])
+            answer = data.get("answer", "")
+
+            snippets = []
+
+            if answer:
+                snippets.append(f"Resume Tavily: {answer}")
+            
+            for idx, result in enumerate(results):
+                title = result.get("title", "No Title")
+                url = result.get("url", "No URL")
+                snippet = result.get("snippet", "No Snippet")
+                snippets.append(f"Result {idx + 1}:\nTitle: {title}\nURL: {url}\nSnippet: {snippet}\n")
+
+            formatted_results = "\n".join(snippets) if snippets else "No results found."
+
+            engine.context['Web Search'] = formatted_results
+
+            return input_data
+        except requests.exceptions.RequestException as e:
+            logger.error(f'Error during web search: {e}.')
+            if e.response is not None:
+                 logger.error(f'Response status: {e.response.status_code}, body: {e.response.text}')
+            engine.context["Web Search"] = f"Error during web search: {e}"
+            return input_data
+        
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data['params'] = {
+            'query_prefix': self.query_prefix,
+            'max_results': self.max_results
+        }
+        return data
+
+
+            
+          
 
 class RouterNode(BaseNode):
 
@@ -192,7 +262,8 @@ def create_node_from_dict(data: dict) -> BaseNode:
         'ReplaceNode': ReplaceNode,
         'FileReadNode': FileReadNode,
         'LLMNode': LLMNode,
-        'RouterNode': RouterNode
+        'RouterNode': RouterNode,
+        'WebSearchNode': WebSearchNode
     }
 
     if node_type not in node_classes:
@@ -200,7 +271,11 @@ def create_node_from_dict(data: dict) -> BaseNode:
     
     readable_name = node_id.replace("_", " ").title()
     
-    if node_type in ['ReplaceNode', 'LLMNode', 'FileReadNode']:
+    if node_type in ['ReplaceNode', 'LLMNode', 'FileReadNode', 'WebSearchNode']:
         return node_classes[node_type](name=readable_name, **params)
     else:
         return node_classes[node_type](name=readable_name)
+
+
+
+   

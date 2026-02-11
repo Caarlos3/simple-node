@@ -22,6 +22,7 @@ class WorkflowEngine:
     def __init__(self):
         self.nodes: list[BaseNode] = []
         self.context: dict = {}
+        self.flow_name: str = "Unnamed Workflow"
 
     def add_node(self, node: BaseNode) -> None:
         self.nodes.append(node)
@@ -36,7 +37,7 @@ class WorkflowEngine:
     def save_to_json(self, file_path: str) -> None:
         """Serializes the current workflow configuration and context to a JSON file."""
         workflow_data = {
-            'workflow_name': 'Exported Workflow',
+            'flow_name': 'Exported Workflow',
             'nodes': [node.to_dict() for node in self.nodes],
             'connections': self._generate_connections()
         }
@@ -63,6 +64,7 @@ class WorkflowEngine:
             data = json.load(f)
 
         engine = cls()
+        engine.flow_name = data.get('flow_name', 'Unnamed Workflow')
        
         for node_data in data['nodes']:
             node = create_node_from_dict(node_data)
