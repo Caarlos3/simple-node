@@ -22,6 +22,7 @@ class WorkflowEngine:
     def __init__(self):
         self.nodes: list[BaseNode] = []
         self.context: dict = {}
+        self.flow_name: str = "Unnamed Workflow"
 
     def add_node(self, node: BaseNode) -> None:
         self.nodes.append(node)
@@ -63,6 +64,7 @@ class WorkflowEngine:
             data = json.load(f)
 
         engine = cls()
+        engine.flow_name = data.get('flow_name', 'Unnamed Workflow')
        
         for node_data in data['nodes']:
             node = create_node_from_dict(node_data)

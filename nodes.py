@@ -169,7 +169,7 @@ class WebSearchNode(BaseNode):
             raise ValueError("TAVILY_API_KEY not found in environment variables. Please set it in the .env file.")
         
         self.api_key = api_key
-        self.base_url = "https://api.tavily.com/v1/search"
+        self.base_url = "https://api.tavily.com/search"
 
     def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
         query = f"{self.query_prefix} {input_data}".strip()
@@ -207,8 +207,11 @@ class WebSearchNode(BaseNode):
 
             return input_data
         except requests.exceptions.RequestException as e:
-            logger.error(f'An error occurred during web search: {e}.')
-            return f'An error occurred during web search: {e}'
+            logger.error(f'Error during web search: {e}.')
+            if e.response is not None:
+                 logger.error(f'Response status: {e.response.status_code}, body: {e.response.text}')
+            engine.context["Web Search"] = f"Error during web search: {e}"
+            return input_data
         
     def to_dict(self) -> dict:
         data = super().to_dict()
