@@ -1,5 +1,5 @@
 {
-    "workflow_name": "Exported Workflow",
+    "flow_name": "Exported Workflow",
     "nodes": [
         {
             "id": "router",

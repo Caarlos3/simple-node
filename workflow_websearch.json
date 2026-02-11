@@ -1,0 +1,37 @@
+{
+    "flow_name": "Web Search",
+    "nodes": [
+        {
+            "id": "Reader",
+            "type": "FileReadNode",
+            "params": {"file_path": "my_info.txt"}
+        },
+        {
+            "id": "router",
+            "type": "RouterNode",
+            "params": {}
+        },
+        {
+            "id": "Web Search",
+            "type": "WebSearchNode",
+            "params":{
+                "query_prefix": "Información profesional sobre Carlos Ramirez desarrollador full stack ¿Qué sabes de Carlos?",
+                "max_results": 5
+            }
+        },
+        {
+            "id": "llm",
+            "type": "LLMNode",
+            "params": {
+                "model": "gpt-4o-mini",
+                "system_prompt": "You are the professional AI assistant for Carlos, a Full Stack Developer.",
+                "temperature": 0.4
+            }
+        }
+    ],
+    "connections": [
+        {"from": "Reader", "to": "router"},
+        {"from": "router", "to": "Web Search"},
+        {"from": "Web Search", "to": "llm"}
+    ]
+}

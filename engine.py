@@ -36,7 +36,7 @@ class WorkflowEngine:
     def save_to_json(self, file_path: str) -> None:
         """Serializes the current workflow configuration and context to a JSON file."""
         workflow_data = {
-            'workflow_name': 'Exported Workflow',
+            'flow_name': 'Exported Workflow',
             'nodes': [node.to_dict() for node in self.nodes],
             'connections': self._generate_connections()
         }

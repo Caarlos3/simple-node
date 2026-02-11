@@ -1,5 +1,5 @@
 {
-    "workflow_name": "AI Greeting Treansletor",
+    "flow_name": "AI Greeting Treansletor",
     "nodes": [
         {
             "id": "router",
