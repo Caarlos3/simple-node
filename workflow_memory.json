@@ -1,0 +1,22 @@
+{
+    "flow_name": "Chat memory",
+    "nodes":[
+        {
+            "id": "memory_manager",
+            "type": "MemoryNode",
+            "params": {"max_turns": 5}
+        },
+        {
+            "id": "llm",
+            "type": "LLMNode",
+            "params": {
+                "model": "gpt-4o-mini",
+                "system_prompt": "You are a friendly assistant who remembers what we talked about. ",
+                "temperature": 0.4
+            }
+        }
+    ],
+    "connections": [
+        {"from": "memory_manager", "to": "llm"}
+    ]
+}
