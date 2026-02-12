@@ -100,6 +100,38 @@ class FileReadNode(BaseNode):
             'file_path': self.file_path
         }
         return data
+    
+class MemoryNode(BaseNode):
+    """
+    Manages conversation history by storing and retrieving past interactions.
+    Limits the history to the most recent 'max_turns' exchanges to optimize token usage.
+    Does not modify input_data; acts as a memory layer for downstream nodes (e.g., LLMNode).
+    """
+
+    def __init__(self, name: str, max_turns: int = 5):
+        super().__init__(name)
+        self.max_turns = max_turns
+
+    def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
+        logger.info(f'Executing node{self.name} for keep the information in conversation memory')
+        history = engine.context.get('conversation_history', [])
+        num_msg = self.max_turns * 2
+        history = history[-num_msg:]
+        engine.context['conversation_history'] = history
+        return input_data
+   
+    def to_dict(self) -> dict:
+        return {
+            'id': self.name,
+            'type': 'MemoryNode',
+            'params': {
+                'max_turns': self.max_turns
+            }
+        }
+
+        
+        
+
 
 class LLMNode(BaseNode):
 
@@ -138,10 +170,15 @@ class LLMNode(BaseNode):
                 model=self.model,
                 messages=[
                     {"role": "system", "content": f"{self.system_prompt}\n\n--- CONTEXTO DESDE ARCHIVO ---\n{context_info}\n\n---CONTEXTO DESDE WEB---\n{web_context}"},
-                    {"role": "user", "content": f"Pregunta: {input_data}"}
+                    *engine.context.get('conversation_history', []),
+                    {"role": "user", "content": f"Pregunta: {input_data}"},
                 ],
                 temperature=self.temperature
             )
+            history = engine.context.get('conversation_history', [])
+            history.append({"role": "user", "content": input_data})
+            history.append({"role": "assistant", "content": response.choices[0].message.content})
+            engine.context['conversation_history'] = history
             return response.choices[0].message.content
         except Exception as e:
             logger.error(f'An error occurred while processing with LLM: {e}.')
@@ -263,7 +300,8 @@ def create_node_from_dict(data: dict) -> BaseNode:
         'FileReadNode': FileReadNode,
         'LLMNode': LLMNode,
         'RouterNode': RouterNode,
-        'WebSearchNode': WebSearchNode
+        'WebSearchNode': WebSearchNode,
+        'MemoryNode': MemoryNode,
     }
 
     if node_type not in node_classes:
@@ -273,8 +311,15 @@ def create_node_from_dict(data: dict) -> BaseNode:
     
     if node_type in ['ReplaceNode', 'LLMNode', 'FileReadNode', 'WebSearchNode']:
         return node_classes[node_type](name=readable_name, **params)
+    elif node_type == 'MemoryNode':
+        return MemoryNode(
+            name=node_id,
+            max_turns=params.get('max_turns', 5)
+        )
     else:
         return node_classes[node_type](name=readable_name)
+    
+
 
 
 
