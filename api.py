@@ -19,6 +19,7 @@ app = FastAPI(
 class WorkflowRequest(BaseModel):
     input_data: str
     workflow_config: str = "workflow_example.json"
+    session_id: str | None = None
 
 
 @app.get("/")
@@ -29,7 +30,7 @@ def read_root():
 @app.post("/run")
 def run_workflow(request: WorkflowRequest):
     try:
-        logger.info("Received workflow execution request")
+        logger.info(f'Received workflow execution request | session: {request.session_id}')
         engine = WorkflowEngine.load_from_json(request.workflow_config)
         result = engine.run(request.input_data)
 
