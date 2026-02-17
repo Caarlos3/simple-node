@@ -1,5 +1,6 @@
 import logging
 import json
+import os
 from nodes import BaseNode, create_node_from_dict 
 
 
@@ -26,12 +27,40 @@ class WorkflowEngine:
 
     def add_node(self, node: BaseNode) -> None:
         self.nodes.append(node)
+
+    def _get_session_path(self, session_id: str) -> str:
+        return f"memory/{session_id}.json"
+       
     
-    def run(self, input_data: str) -> str:
+    def _load_session(self, session_id: str) -> None:
+        file_path = self._get_session_path(session_id)
+   
+        if os.path.exists(file_path):
+                with open (file_path, 'r') as f:
+                    self.context['conversation_history'] = json.load(f)
+        
+        else:
+            logger.info("Session not found")
+    
+    def _save_session(self, session_id: str) -> None:
+        file_path = self._get_session_path(session_id)
+        history = self.context.get('conversation_history', [])
+        with open (file_path, 'w') as f:
+            json.dump(history, f, indent=4)
+    
+    def run(self, input_data: str, session_id: str = None) -> str:
         self.context['user_input'] = input_data
+        
+        if session_id:
+            self._load_session(session_id)
+
         current_data = input_data
         for node in self.nodes:
             current_data = node.execute(current_data, self)
+        
+        if session_id:
+            self._save_session(session_id)
+                
         return current_data
     
     def save_to_json(self, file_path: str) -> None:

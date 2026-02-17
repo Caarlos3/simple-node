@@ -141,7 +141,7 @@ class LLMNode(BaseNode):
     context from the engine's shared memory into the system prompt.
     """
 
-    def __init__(self, name: str, model: str, system_prompt: str, temperature: float = 0.7):
+    def __init__(self, name: str, model: str, system_prompt: str, temperature: float = 0.4):
         super().__init__(name)
         self.model = model
         self.system_prompt = system_prompt
