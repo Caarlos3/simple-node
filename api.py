@@ -32,7 +32,7 @@ def run_workflow(request: WorkflowRequest):
     try:
         logger.info(f'Received workflow execution request | session: {request.session_id}')
         engine = WorkflowEngine.load_from_json(request.workflow_config)
-        result = engine.run(request.input_data)
+        result = engine.run(request.input_data, session_id=request.session_id)
 
         return {
             "status": "success",
