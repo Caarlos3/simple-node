@@ -1,14 +1,6 @@
 [
     {
         "role": "user",
-        "content": "Hola, como me llamo?"
-    },
-    {
-        "role": "assistant",
-        "content": "Hola, te llamas Carlos Ram\u00edrez Torres. \u00bfEn qu\u00e9 puedo ayudarte hoy?"
-    },
-    {
-        "role": "user",
         "content": "Como me llamo?"
     },
     {

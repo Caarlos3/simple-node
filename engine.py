@@ -34,19 +34,42 @@ class WorkflowEngine:
     
     def _load_session(self, session_id: str) -> None:
         file_path = self._get_session_path(session_id)
-   
-        if os.path.exists(file_path):
-                with open (file_path, 'r') as f:
-                    self.context['conversation_history'] = json.load(f)
+
         
+        if os.path.exists(file_path):
+            try:
+                 with open (file_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    self.context['conversation_history'] = data
+                    logger.info(f'session loaded: {file_path} ({len(data)})')
+            
+            except json.JSONDecodeError:
+                corrupted_path = f'{file_path}.corrupted'
+                logger.error(f'Corrupted JSON in {file_path}') 
+
+                try:
+                    os.rename(file_path, corrupted_path)
+                except Exception as rename_error:
+                    logger.error(f'Could not rename corrupted file: {rename_error}. Renaming to {corrupted_path}')
+                self.context['conversation_history'] = []
+            
+            except Exception as e:
+                logger.error(f'Unexpected error: {e}')
+                self.context['conversation_history'] = []
+            
         else:
-            logger.info("Session not found")
+             logger.info("Session not found")
+    
+
     
     def _save_session(self, session_id: str) -> None:
         file_path = self._get_session_path(session_id)
+        os.makedirs("memory", exist_ok=True)
         history = self.context.get('conversation_history', [])
         with open (file_path, 'w') as f:
             json.dump(history, f, indent=4)
+        
+        logger.info(f'session saved: {file_path} ({len(history)})')
     
     def run(self, input_data: str, session_id: str = None) -> str:
         self.context['user_input'] = input_data
