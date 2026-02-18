@@ -2,6 +2,7 @@ import logging
 import json
 import os
 from nodes import BaseNode, create_node_from_dict 
+from session_manager import SessionManager
 
 
 logger = logging.getLogger(__name__)
@@ -24,65 +25,26 @@ class WorkflowEngine:
         self.nodes: list[BaseNode] = []
         self.context: dict = {}
         self.flow_name: str = "Unnamed Workflow"
+        self.session_manager = SessionManager()
 
     def add_node(self, node: BaseNode) -> None:
         self.nodes.append(node)
 
-    def _get_session_path(self, session_id: str) -> str:
-        return f"memory/{session_id}.json"
-       
-    
-    def _load_session(self, session_id: str) -> None:
-        file_path = self._get_session_path(session_id)
-
-        
-        if os.path.exists(file_path):
-            try:
-                 with open (file_path, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-                    self.context['conversation_history'] = data
-                    logger.info(f'session loaded: {file_path} ({len(data)})')
-            
-            except json.JSONDecodeError:
-                corrupted_path = f'{file_path}.corrupted'
-                logger.error(f'Corrupted JSON in {file_path}') 
-
-                try:
-                    os.rename(file_path, corrupted_path)
-                except Exception as rename_error:
-                    logger.error(f'Could not rename corrupted file: {rename_error}. Renaming to {corrupted_path}')
-                self.context['conversation_history'] = []
-            
-            except Exception as e:
-                logger.error(f'Unexpected error: {e}')
-                self.context['conversation_history'] = []
-            
-        else:
-             logger.info("Session not found")
-    
-
-    
-    def _save_session(self, session_id: str) -> None:
-        file_path = self._get_session_path(session_id)
-        os.makedirs("memory", exist_ok=True)
-        history = self.context.get('conversation_history', [])
-        with open (file_path, 'w') as f:
-            json.dump(history, f, indent=4)
-        
-        logger.info(f'session saved: {file_path} ({len(history)})')
     
     def run(self, input_data: str, session_id: str = None) -> str:
         self.context['user_input'] = input_data
         
         if session_id:
-            self._load_session(session_id)
+            history = self.session_manager.load_history(session_id)
+            self.context['conversation_history'] = history
 
         current_data = input_data
         for node in self.nodes:
             current_data = node.execute(current_data, self)
         
         if session_id:
-            self._save_session(session_id)
+            history = self.context.get('conversation_history', [])
+            self.session_manager.save_history(session_id, history)
                 
         return current_data
     
