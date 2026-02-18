@@ -1,0 +1,18 @@
+[
+    {
+        "role": "user",
+        "content": "Hola, me llamo Carlos"
+    },
+    {
+        "role": "assistant",
+        "content": "\u00a1Hola, Carlos! \u00bfEn qu\u00e9 puedo ayudarte hoy?"
+    },
+    {
+        "role": "user",
+        "content": "como me llamo?"
+    },
+    {
+        "role": "assistant",
+        "content": "Te llamas Carlos Ram\u00edrez Torres. \u00bfHay algo m\u00e1s en lo que te pueda ayudar?"
+    }
+]
