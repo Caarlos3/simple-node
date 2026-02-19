@@ -277,14 +277,21 @@ class RouterNode(BaseNode):
     def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
         logger.info(f'Executing node {self.name} to route based on input.')
         clean_input = input_data.lower().strip()
+        history = engine.context.get('conversation_history', [])
 
         if any(greet in clean_input for greet in self.greetings):
             engine.context['needs_ai'] = False
             return "Hello! I'm Carlos virtual assistant. ¿How can I assist you today?"
         
-        logger.info("No greeting detected, routing to LLMNode.")
-        engine.context['needs_ai'] = True
-        return input_data
+        elif len(history) > 0:
+            logger.info("Existing session detected, routing directly to LlMNode")
+            engine.context['needs_ai'] = True
+            return input_data
+        
+        else:
+            logger.info("New session detected, routing to ReaderNode")
+            engine.context['needs_ai'] = True
+            return input_data
     
 
 def create_node_from_dict(data: dict) -> BaseNode:
