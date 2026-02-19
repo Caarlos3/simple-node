@@ -82,6 +82,11 @@ class FileReadNode(BaseNode):
     
     def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
         logger.info(f'Executing node {self.name} to read from file: {self.file_path}.')
+
+        if engine.context.get('skip_reader'):
+           logger.info(f'Skipping FileReadNode, context already loaded')
+           return input_data
+
         try:
             with open(self.file_path, 'r', encoding= "utf-8") as file:
                 content = file.read()
@@ -279,18 +284,21 @@ class RouterNode(BaseNode):
         clean_input = input_data.lower().strip()
         history = engine.context.get('conversation_history', [])
 
+
         if any(greet in clean_input for greet in self.greetings):
             engine.context['needs_ai'] = False
-            return "Hello! I'm Carlos virtual assistant. ¿How can I assist you today?"
+            return f"Hello! I'm Carlos virtual assistant. ¿How can I assist you today?"
         
         elif len(history) > 0:
-            logger.info("Existing session detected, routing directly to LlMNode")
+            logger.info(f"Existing session detected, routing directly to LlMNode")
             engine.context['needs_ai'] = True
+            engine.context['skip_reader'] = True
             return input_data
         
         else:
-            logger.info("New session detected, routing to ReaderNode")
+            logger.info(f"New session detected, routing to ReaderNode")
             engine.context['needs_ai'] = True
+            engine.context['skip_reader'] = False
             return input_data
     
 
