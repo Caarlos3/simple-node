@@ -56,9 +56,13 @@ class SessionManager:
         Saves the provided history list to a JSON file.
         Creates the storage directory if it does not exist.
         """
+
         file_path = self._get_path(session_id)
+        temp_path = file_path + ".tmp"
         os.makedirs(self.storage_dir, exist_ok=True)
-        with open (file_path, 'w', encoding='utf-8') as f:
+        with open (temp_path, 'w', encoding='utf-8') as f:
             json.dump(history, f, indent=4, ensure_ascii=False)
+        os.replace(temp_path, file_path)
         logger.info(f"session saved: {file_path} ({len(history)} messages)")
-  
+
+        
