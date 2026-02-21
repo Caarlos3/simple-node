@@ -1,6 +1,7 @@
 import logging
 import json
 import os
+import time 
 from nodes import BaseNode, create_node_from_dict 
 from session_manager import SessionManager
 
@@ -40,7 +41,11 @@ class WorkflowEngine:
 
         current_data = input_data
         for node in self.nodes:
+            start_time = time.time()
             current_data = node.execute(current_data, self)
+            duration = time.time() - start_time
+            logger.info(f'Node {node.name} executed in {duration:.3f}s')
+
         
         if session_id:
             history = self.context.get('conversation_history', [])

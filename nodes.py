@@ -118,11 +118,12 @@ class MemoryNode(BaseNode):
         self.max_turns = max_turns
 
     def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
-        logger.info(f'Executing node{self.name} for keep the information in conversation memory')
+        logger.info(f'Executing node {self.name} for keep the information in conversation memory')
         history = engine.context.get('conversation_history', [])
         num_msg = self.max_turns * 2
-        history = history[-num_msg:]
-        engine.context['conversation_history'] = history
+        if len(history) > num_msg:
+         engine.context['conversation_history'] = history[-num_msg:]
+         logger.info(f'Memory trimmed to last {self.max_turns} turns ({num_msg} messages)')
         return input_data
    
     def to_dict(self) -> dict:
