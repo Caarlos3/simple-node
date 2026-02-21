@@ -181,6 +181,15 @@ class LLMNode(BaseNode):
                 ],
                 temperature=self.temperature
             )
+            input_tokens = response.usage.input_tokens
+            output_tokens = response.usage.output_tokens
+            total_tokens = input_tokens + output_tokens
+            cost = (input_tokens * 0.15 / 1_000_000) + (output_tokens * 0.60 / 1_000_000)
+            logger.info(f'Node {self.name} used {total_tokens} tokens (In: {input_tokens}, Out: {output_tokens} ) | Cost: ${cost:.6f}')
+            previous_tokens = engine.context.get('total_tokens_used', 0)
+            engine.context['total_tokens_used'] = previous_tokens + total_tokens
+            previous_cost = engine.context.get('total_cost', 0)
+            engine.context['total_cost'] = previous_cost + cost
             history = engine.context.get('conversation_history', [])
             history.append({"role": "user", "content": input_data})
             history.append({"role": "assistant", "content": response.choices[0].message.content})

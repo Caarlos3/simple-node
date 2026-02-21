@@ -38,6 +38,7 @@ def run_workflow(request: WorkflowRequest):
             "status": "success",
             "input": request.input_data,
             "output": result,
+            "tokens_used": engine.context.get('total_tokens_used', 0),
             "context_summary": {k: (v[:50] + "..." if isinstance(v, str) and len(v) > 50 else v)
                                 for k, v in engine.context.items()}
         }
