@@ -181,6 +181,11 @@ class LLMNode(BaseNode):
                 ],
                 temperature=self.temperature
             )
+            input_tokens = response.usage.prompt_tokens
+            output_tokens = response.usage.completion_tokens
+            total_tokens = response.usage.total_tokens
+            logger.info(f'Node {self.name} used {total_tokens} tokens (In: {input_tokens}, Out: {output_tokens} )')
+            engine.context['total_tokens_used'] = total_tokens
             history = engine.context.get('conversation_history', [])
             history.append({"role": "user", "content": input_data})
             history.append({"role": "assistant", "content": response.choices[0].message.content})
