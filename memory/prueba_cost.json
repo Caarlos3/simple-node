@@ -1,0 +1,26 @@
+[
+    {
+        "role": "user",
+        "content": "Hola"
+    },
+    {
+        "role": "assistant",
+        "content": "¡Hola, Carlos! ¿En qué puedo ayudarte hoy?"
+    },
+    {
+        "role": "user",
+        "content": "Como me llamo?"
+    },
+    {
+        "role": "assistant",
+        "content": "Te llamas Carlos. ¿Hay algo más en lo que pueda ayudarte?"
+    },
+    {
+        "role": "user",
+        "content": "sabes mi edad?"
+    },
+    {
+        "role": "assistant",
+        "content": "No tengo información sobre tu edad. Si quieres, puedes compartirla o preguntarme algo más."
+    }
+]

@@ -1,6 +1,7 @@
 import logging
 import json
 import os
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -64,5 +65,32 @@ class SessionManager:
             json.dump(history, f, indent=4, ensure_ascii=False)
         os.replace(temp_path, file_path)
         logger.info(f"session saved: {file_path} ({len(history)} messages)")
+    
+    
+    def list_session(self) -> list[dict]:
 
-        
+       """
+        Lists all available sessions in the storage directory.
+        Returns a list of dictionaries containing session metadata:
+        [{'id': 'session_1', 'updated_at': '2024-03-20 15:30:00'}, ...]
+        """
+       
+       if not os.path.exists(self.storage_dir):
+           return []
+       
+       sessions = []
+
+       for filename in os.listdir(self.storage_dir):
+           if filename.endswith(".json"):
+               full_path = os.path.join(self.storage_dir, filename)
+               mtime = os.path.getmtime(full_path)
+               date_str = datetime.fromtimestamp(mtime).strftime('%Y-%m-%d %H:%M:%S')
+               session_id = os.path.splitext(filename)[0]
+               session_data = {
+                   "id": session_id,
+                   "updated_at": date_str,
+               }
+               sessions.append(session_data)
+
+       return sessions
+       
