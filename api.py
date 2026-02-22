@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from engine import WorkflowEngine
 from dotenv import load_dotenv
+from session_manager import SessionManager
 
 load_dotenv()
 
@@ -15,6 +16,8 @@ app = FastAPI(
     description="Api for executing workflows nodes",
     version="0.1.0",
     )
+
+session_manager = SessionManager()
 
 class WorkflowRequest(BaseModel):
     input_data: str
@@ -47,6 +50,23 @@ def run_workflow(request: WorkflowRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-        
-         
-        
+@app.get("/sessions", response_model=list[dict])
+def list_sessions():
+    sessions = session_manager.list_sessions()
+    return sessions
+
+
+@app.delete("/sessions/{session_id}")
+def delete_session(session_id: str):
+    if not session_id.strip():
+        raise HTTPException(status_code=400)
+    
+    result = session_manager.delete_session(session_id)
+    
+    if result:
+        return {"message": f"Session {session_id} deleted"}
+    else:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+
+
