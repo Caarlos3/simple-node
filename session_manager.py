@@ -67,7 +67,7 @@ class SessionManager:
         logger.info(f"session saved: {file_path} ({len(history)} messages)")
     
     
-    def list_session(self) -> list[dict]:
+    def list_sessions(self) -> list[dict]:
 
        """
         Lists all available sessions in the storage directory.
