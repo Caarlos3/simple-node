@@ -93,4 +93,24 @@ class SessionManager:
                sessions.append(session_data)
 
        return sessions
-       
+    
+
+    def delete_session(self, session_id: str) -> bool:
+        """
+        Safely deletes a session file by its ID.
+        Returns True if deleted, False if the session was not found.
+        """
+        clean_id = os.path.basename(session_id)
+        file_path = self._get_path(clean_id)
+
+        try:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                logger.info(f'Session deleted: {session_id}')
+                return True
+        
+        except Exception as e:
+            logger.exception(f'Error during deleting session')
+            return False
+        
+        return False
