@@ -165,7 +165,8 @@ class LLMNode(BaseNode):
         
     def execute(self, input_data: str, engine: 'WorkflowEngine'):
         if engine.context.get('needs_ai') == False:
-            return input_data
+           yield input_data
+           return
         
         context_info = engine.context.get('file_content', 'No hay información adicional disponible.')
         web_context = engine.context.get('Web Search', 'No encontrada busqueda' )
@@ -207,11 +208,11 @@ class LLMNode(BaseNode):
             history.append({"role": "user", "content": input_data})
             history.append({"role": "assistant", "content": acumulate_text})
             engine.context['conversation_history'] = history
-            return 
+            
         except Exception as e:
             logger.error(f'An error occurred while processing with LLM: {e}.')
-            return f'An error occurred while processing with LLM: {e}'
-    
+            raise e
+        
     def to_dict(self) -> dict:
        data = super().to_dict()
        data['params'] = {

@@ -1,5 +1,6 @@
 import logging
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from engine import WorkflowEngine
 from dotenv import load_dotenv
@@ -35,16 +36,15 @@ def run_workflow(request: WorkflowRequest):
     try:
         logger.info(f'Received workflow execution request | session: {request.session_id}')
         engine = WorkflowEngine.load_from_json(request.workflow_config)
-        result = engine.run(request.input_data, session_id=request.session_id)
+        stream = engine.run(request.input_data, session_id=request.session_id)
 
-        return {
-            "status": "success",
-            "input": request.input_data,
-            "output": result,
-            "tokens_used": engine.context.get('total_tokens_used', 0),
-            "context_summary": {k: (v[:50] + "..." if isinstance(v, str) and len(v) > 50 else v)
-                                for k, v in engine.context.items()}
-        }
+        def event_stream():
+            for chunk in stream:
+                yield chunk
+            cost = engine.context.get('total_cost', 0)
+            yield f"\n\n[COST:${engine.context.get('total_cost', 0):.6f}\n]"
+
+        return StreamingResponse(event_stream() , media_type="text/plain")
     except Exception as e:
         logger.error(f"Error executing workflow: {e}")
         raise HTTPException(status_code=500, detail=str(e))

@@ -36,21 +36,26 @@ class WorkflowEngine:
         self.context['user_input'] = input_data
         current_data = input_data
 
-        for node in self.nodes:
+        for i, node in enumerate(self.nodes):
             start_time = time.time()
             result = node.execute(current_data, self)
+
             if hasattr(result, "__iter__") and not isinstance(result, (list, str)):
                 collected_text = ""
-                for chunk in result:
-                    yield chunk
-                    collected_text += chunk
-                current_data = collected_text
+                try:
+                   for chunk in result:
+                       yield chunk
+                       collected_text += chunk
+                   current_data = collected_text
+                except Exception as e:
+                    logger.error(f"Error streaming from node {node.name}: {e}")
+                    raise e
             else:
                 current_data = result
-                yield result
-        
-        duration = time.time() - start_time
-        logger.info(f'Node {node.name} executed in {duration:.3f}s')
+                if i == len(self.nodes) - 1:
+                    yield result
+            duration = time.time() - start_time
+            logger.info(f'Node {node.name} executed in {duration:.3f}s')
 
         if session_id:
             self.session_manager.save_history(session_id, self.context)
