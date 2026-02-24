@@ -32,26 +32,28 @@ class WorkflowEngine:
         self.nodes.append(node)
 
     
-    def run(self, input_data: str, session_id: str = None) -> str:
+    def run(self, input_data: str, session_id: str = None):
         self.context['user_input'] = input_data
-        
-        if session_id:
-            history = self.session_manager.load_history(session_id)
-            self.context['conversation_history'] = history
-
         current_data = input_data
+
         for node in self.nodes:
             start_time = time.time()
-            current_data = node.execute(current_data, self)
-            duration = time.time() - start_time
-            logger.info(f'Node {node.name} executed in {duration:.3f}s')
-
+            result = node.execute(current_data, self)
+            if hasattr(result, "__iter__") and not isinstance(result, (list, str)):
+                collected_text = ""
+                for chunk in result:
+                    yield chunk
+                    collected_text += chunk
+                current_data = collected_text
+            else:
+                current_data = result
+                yield result
         
+        duration = time.time() - start_time
+        logger.info(f'Node {node.name} executed in {duration:.3f}s')
+
         if session_id:
-            history = self.context.get('conversation_history', [])
-            self.session_manager.save_history(session_id, history)
-                
-        return current_data
+            self.session_manager.save_history(session_id, self.context)
     
     def save_to_json(self, file_path: str) -> None:
         """Serializes the current workflow configuration and context to a JSON file."""
