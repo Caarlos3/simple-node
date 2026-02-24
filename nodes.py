@@ -3,6 +3,7 @@ import logging
 import requests
 from openai import OpenAI
 from typing import TYPE_CHECKING
+import tiktoken 
 
 if TYPE_CHECKING:
     from engine import WorkflowEngine
@@ -162,27 +163,40 @@ class LLMNode(BaseNode):
             api_key=api_key
         )
         
-    def execute(self, input_data: str, engine: 'WorkflowEngine') -> str:
+    def execute(self, input_data: str, engine: 'WorkflowEngine'):
         if engine.context.get('needs_ai') == False:
-            return input_data
+           yield input_data
+           return
         
         context_info = engine.context.get('file_content', 'No hay información adicional disponible.')
         web_context = engine.context.get('Web Search', 'No encontrada busqueda' )
         
         logger.info(f'Executing node {self.name} with multi-source context (file + web).')
+
+        acumulate_text = ""
+        messages = [
+                    {"role": "system", "content": f"{self.system_prompt}\n\n--- CONTEXTO DESDE ARCHIVO ---\n{context_info}\n\n---CONTEXTO DESDE WEB---\n{web_context}"},
+                    *engine.context.get('conversation_history', []),
+                    {"role": "user", "content": f"Pregunta: {input_data}"},
+                ]
         
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
-                messages=[
-                    {"role": "system", "content": f"{self.system_prompt}\n\n--- CONTEXTO DESDE ARCHIVO ---\n{context_info}\n\n---CONTEXTO DESDE WEB---\n{web_context}"},
-                    *engine.context.get('conversation_history', []),
-                    {"role": "user", "content": f"Pregunta: {input_data}"},
-                ],
+                stream= True,
+                messages= messages,
                 temperature=self.temperature
             )
-            input_tokens = response.usage.input_tokens
-            output_tokens = response.usage.output_tokens
+            for chunck in response:
+                content = chunck.choices[0].delta.content
+                if content:
+                    yield content
+                    acumulate_text += content
+
+            enc = tiktoken.encoding_for_model(self.model)
+            full_input = " ".join([m["content"] for m in messages])
+            input_tokens = len(enc.encode(full_input))
+            output_tokens = len(enc.encode(acumulate_text))
             total_tokens = input_tokens + output_tokens
             cost = (input_tokens * 0.15 / 1_000_000) + (output_tokens * 0.60 / 1_000_000)
             logger.info(f'Node {self.name} used {total_tokens} tokens (In: {input_tokens}, Out: {output_tokens} ) | Cost: ${cost:.6f}')
@@ -192,13 +206,13 @@ class LLMNode(BaseNode):
             engine.context['total_cost'] = previous_cost + cost
             history = engine.context.get('conversation_history', [])
             history.append({"role": "user", "content": input_data})
-            history.append({"role": "assistant", "content": response.choices[0].message.content})
+            history.append({"role": "assistant", "content": acumulate_text})
             engine.context['conversation_history'] = history
-            return response.choices[0].message.content
+            
         except Exception as e:
             logger.error(f'An error occurred while processing with LLM: {e}.')
-            return f'An error occurred while processing with LLM: {e}'
-    
+            raise e
+        
     def to_dict(self) -> dict:
        data = super().to_dict()
        data['params'] = {
