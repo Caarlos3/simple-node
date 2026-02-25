@@ -158,10 +158,7 @@ class LLMNode(BaseNode):
         if not api_key:
             raise ValueError("ROUTELLM_API_KEY not found in environment variables. Please set it in the .env file.")
         
-        self.client = OpenAI(
-            base_url="https://routellm.abacus.ai/v1",
-            api_key=api_key
-        )
+        self.client = OpenAI(api_key=api_key)
         
     def execute(self, input_data: str, engine: 'WorkflowEngine'):
         if engine.context.get('needs_ai') == False:

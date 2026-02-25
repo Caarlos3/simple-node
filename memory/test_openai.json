@@ -1,0 +1,18 @@
+{
+    "user_input": "Cuéntame en tres frases qué es un orquestador de IA",
+    "needs_ai": true,
+    "skip_reader": false,
+    "file_content": "Nombre: Carlos Ramírez Torres\nProfesión: Full Stack Developer con transción a IA Developer\nSkills: JavaScript, React, Python, Java, Node.js, SQL, APIRest\nProyectos: simple-node, Manga.bibl, Fitapp\n",
+    "total_tokens_used": 188,
+    "total_cost": 6.51e-05,
+    "conversation_history": [
+        {
+            "role": "user",
+            "content": "Cuéntame en tres frases qué es un orquestador de IA"
+        },
+        {
+            "role": "assistant",
+            "content": "Un orquestador de IA es una herramienta o plataforma que coordina y gestiona múltiples modelos de inteligencia artificial para trabajar juntos de manera eficiente. Facilita la integración de diferentes servicios de IA, optimizando el flujo de datos y la comunicación entre ellos. Su objetivo es mejorar el rendimiento y la escalabilidad de las aplicaciones de IA, permitiendo a los desarrolladores implementar soluciones más complejas y efectivas."
+        }
+    ]
+}
