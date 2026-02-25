@@ -1,42 +1,480 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+/* ==========================================================================
+   Variables y Configuración del Tema
+   ========================================================================== */
+:root {
+  --bg-main: #0b0e14;
+  --bg-panel: rgba(20, 24, 33, 0.7);
+  --border-color: #1e222b;
+  --accent-color: #0ea5e9;
+  --accent-hover: #0284c7;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --glass-bg: rgba(30, 34, 43, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.05);
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #ffffffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #ffffffaa);
+/* ==========================================================================
+   Estilos Globales
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-@keyframes logo-spin {
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   Layout Principal
+   ========================================================================== */
+.layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ==========================================================================
+   Sidebar Izquierdo
+   ========================================================================== */
+.sidebar {
+  width: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 0;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-color);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 10;
+}
+
+.sidebar-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: all 0.2s ease;
+}
+
+.sidebar-icon:hover {
+  color: var(--text-main);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+}
+
+.sidebar-icon.active {
+  color: var(--accent-color);
+  background: rgba(14, 165, 233, 0.1);
+  border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+/* ==========================================================================
+   Área Central - Contenedor y Header del Chat
+   ========================================================================== */
+.main-chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.05) 0%, transparent 50%);
+}
+
+.chat-header {
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(11, 14, 20, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.chat-header h1 {
+  font-size: 1.15rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-main);
+}
+
+/* ==========================================================================
+   Área Central - Lista de Mensajes
+   ========================================================================== */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.message {
+  display: flex;
+  gap: 16px;
+  max-width: 85%;
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(10px);
   }
+
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+.message.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.user .message-avatar {
+  background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+  color: white;
+}
+
+.assistant .message-avatar {
+  background: var(--bg-main);
+  color: var(--accent-color);
+  border: 1px solid var(--border-color);
+}
+
+.message-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user .message-content-wrapper {
+  align-items: flex-end;
+}
+
+.message-bubble {
+  padding: 14px 20px;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.user .message-bubble {
+  background: var(--accent-color);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.assistant .message-bubble {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  border-bottom-left-radius: 4px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--accent-color);
+  background: rgba(14, 165, 233, 0.1);
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ==========================================================================
+   Área Central - Input y Formulario
+   ========================================================================== */
+.chat-input-container {
+  padding: 24px 32px;
+  background: linear-gradient(to top, var(--bg-main) 60%, transparent);
+}
+
+.chat-form {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(20, 24, 33, 0.8);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 10px 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+
+.chat-form:focus-within {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4);
+  background: rgba(25, 30, 40, 0.9);
+}
+
+.chat-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  font-size: 1rem;
+  padding: 12px 8px;
+  outline: none;
+}
+
+.chat-input::placeholder {
+  color: var(--text-muted);
+}
+
+.send-button {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.send-button:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.send-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.send-button:disabled {
+  background: var(--border-color);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   Panel Derecho (Metadatos)
+   ========================================================================== */
+.right-panel {
+  width: 300px;
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border-color);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  z-index: 10;
+}
+
+.panel-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card:hover {
+  background: rgba(40, 45, 55, 0.5);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(14, 165, 233, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-color);
+  border: 1px solid rgba(14, 165, 233, 0.1);
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   Utilidades y Animaciones Extras
+   ========================================================================== */
+/* Personalización de Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Indicador de "Escribiendo" */
+@keyframes pulse-dot {
+
+  0%,
+  100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
   }
 }
 
-.card {
-  padding: 2em;
+.typing-indicator {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  height: 24px;
 }
 
-.read-the-docs {
-  color: #888;
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--accent-color);
+  border-radius: 50%;
+  animation: pulse-dot 1.2s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* ==========================================================================
+   Media Queries (Responsive Design)
+   ========================================================================== */
+
+/* Ajustes Especiales de Sidebar Icon */
+.sidebar-icon.settings-icon {
+  margin-top: auto;
+}
+
+/* Tablets (1024px o menos) */
+@media (max-width: 1024px) {
+  .right-panel {
+    display: none;
+    /* Ocultamos el panel de stats por defecto en tablets y pantallas pequeñas */
+  }
+}
+
+/* Teléfonos (768px o menos) */
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100vw;
+    height: 70px;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0 16px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .sidebar-icon {
+    margin-bottom: 0;
+  }
+
+  .sidebar-icon.settings-icon {
+    margin-top: 0;
+  }
+
+  .chat-messages {
+    padding: 20px 16px;
+    gap: 20px;
+  }
+
+  .message {
+    max-width: 95%;
+  }
+
+  .chat-input-container {
+    padding: 16px;
+  }
+
+  .chat-header {
+    padding: 16px;
+  }
 }
