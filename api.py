@@ -51,8 +51,9 @@ def run_workflow(request: WorkflowRequest):
         def event_stream():
             for chunk in stream:
                 yield chunk
-            cost = engine.context.get('total_cost', 0)
-            yield f"\n\n[COST:${engine.context.get('total_cost', 0):.6f}\n]"
+            total_cost = engine.context.get('total_cost', 0)
+            total_tokens = engine.context.get('total_tokens_used', 0)
+            yield f"[COST:${total_cost:.6f}][TOKENS:{total_tokens}]"
 
         return StreamingResponse(event_stream() , media_type="text/plain")
     except Exception as e:
