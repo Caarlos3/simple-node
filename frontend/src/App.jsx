@@ -39,8 +39,8 @@ export default function App() {
       const decoder = new TextDecoder();
       let done = false;
       let fullResponseText = ''; 
-      let hasAddedCost = false;   // Seguro para sumar el coste una sola vez por respuesta
-      let hasAddedTokens = false; // Seguro para sumar los tokens una sola vez por respuesta
+      let hasAddedCost = false;   
+      let hasAddedTokens = false; 
 
       setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
@@ -52,19 +52,25 @@ export default function App() {
           const chunkValue = decoder.decode(value, { stream: true });
           fullResponseText += chunkValue;
 
-          // 1. Extraer y SUMAR el coste al acumulado total
+          // 1. Extraer y SUMAR el coste al acumulado total (con validación)
           const costMatch = fullResponseText.match(/\[COST:\$([\d.]+)\]/);
           if (costMatch && !hasAddedCost) {
-            const newCost = parseFloat(costMatch[1]);
-            setCost(prev => (parseFloat(prev) + newCost).toFixed(6));
+            const newCost = parseFloat(costMatch[1]) || 0;
+            setCost(prev => {
+              const current = parseFloat(prev) || 0;
+              return (current + newCost).toFixed(6);
+            });
             hasAddedCost = true; 
           }
 
-          // 2. Extraer y SUMAR los tokens al acumulado total
+          // 2. Extraer y SUMAR los tokens al acumulado total (con validación)
           const tokenMatch = fullResponseText.match(/\[TOKENS:(\d+)\]/);
           if (tokenMatch && !hasAddedTokens) {
-            const newTokens = parseInt(tokenMatch[1]);
-            setTokens(prev => (parseInt(prev) + newTokens).toString());
+            const newTokens = parseInt(tokenMatch[1], 10) || 0;
+            setTokens(prev => {
+              const current = parseInt(prev, 10) || 0;
+              return (current + newTokens).toString();
+            });
             hasAddedTokens = true;
           }
 
@@ -111,12 +117,38 @@ export default function App() {
               </div>
             </div>
           ))}
-          {isLoading && <div className="message assistant"><div className="message-avatar"><Bot size={18} /></div><div className="message-bubble">...</div></div>}
+          {isLoading && (
+            <div className="message assistant">
+              <div className="message-avatar"><Bot size={18} /></div>
+              <div className="message-content-wrapper">
+                <span className="ai-badge">ASSISTENT-PRO</span>
+                <div className="message-bubble">
+                  <div className="typing-indicator">
+                    <span className="typing-dot" />
+                    <span className="typing-dot" />
+                    <span className="typing-dot" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         <div className="chat-input-container">
           <form className="chat-form" onSubmit={handleSubmit}>
-            <input className="chat-input" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Escribe un mensaje..." disabled={isLoading} />
-            <button type="submit" className="send-button" disabled={isLoading || !input.trim()}><Send size={18} /></button>
+            <input 
+              className="chat-input" 
+              value={input} 
+              onChange={(e) => setInput(e.target.value)} 
+              placeholder="Escribe un mensaje..." 
+              disabled={isLoading} 
+            />
+            <button 
+              type="submit" 
+              className="send-button" 
+              disabled={isLoading || !input.trim()}
+            >
+              <Send size={18} />
+            </button>
           </form>
         </div>
       </main>
@@ -125,15 +157,24 @@ export default function App() {
         <h2 className="panel-title">Node Stats</h2>
         <div className="stat-card">
           <div className="stat-icon"><Coins size={20} /></div>
-          <div className="stat-info"><span className="stat-label">Coste Acumulado</span><span className="stat-value">${cost}</span></div>
+          <div className="stat-info">
+            <span className="stat-label">Coste Acumulado</span>
+            <span className="stat-value">${cost}</span>
+          </div>
         </div>
         <div className="stat-card" style={{ marginTop: '16px' }}>
           <div className="stat-icon"><Activity size={20} /></div>
-          <div className="stat-info"><span className="stat-label">Tokens Totales</span><span className="stat-value">{tokens}</span></div>
+          <div className="stat-info">
+            <span className="stat-label">Tokens Totales</span>
+            <span className="stat-value">{tokens}</span>
+          </div>
         </div>
         <div className="stat-card" style={{ marginTop: '16px' }}>
           <div className="stat-icon"><Clock size={20} /></div>
-          <div className="stat-info"><span className="stat-label">Tiempo de Ejecución</span><span className="stat-value">1.2s</span></div>
+          <div className="stat-info">
+            <span className="stat-label">Tiempo de Ejecución</span>
+            <span className="stat-value">1.2s</span>
+          </div>
         </div>
       </aside>
     </div>
