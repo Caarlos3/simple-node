@@ -22,11 +22,12 @@ class WorkflowEngine:
     memory for all nodes in the pipeline.
     """ 
 
-    def __init__(self):
+    def __init__(self, session_manager=None):
         self.nodes: list[BaseNode] = []
         self.context: dict = {}
         self.flow_name: str = "Unnamed Workflow"
-        self.session_manager = SessionManager()
+        self.session_manager = session_manager
+        
 
     def add_node(self, node: BaseNode) -> None:
         self.nodes.append(node)

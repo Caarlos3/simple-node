@@ -1,0 +1,18 @@
+{
+    "user_input": "ahora?",
+    "needs_ai": true,
+    "skip_reader": false,
+    "file_content": "Nombre: Carlos Ramírez Torres\nProfesión: Full Stack Developer con transción a IA Developer\nSkills: JavaScript, React, Python, Java, Node.js, SQL, APIRest\nProyectos: simple-node, Manga.bibl, Fitapp\n",
+    "total_tokens_used": 125,
+    "total_cost": 3.2699999999999995e-05,
+    "conversation_history": [
+        {
+            "role": "user",
+            "content": "ahora?"
+        },
+        {
+            "role": "assistant",
+            "content": "¡Hola, Carlos! ¿En qué puedo ayudarte hoy? Si tienes alguna pregunta o necesitas asistencia con un proyecto, no dudes en decírmelo."
+        }
+    ]
+}

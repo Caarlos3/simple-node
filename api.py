@@ -45,7 +45,7 @@ def read_root():
 def run_workflow(request: WorkflowRequest):
     try:
         logger.info(f'Received workflow execution request | session: {request.session_id}')
-        engine = WorkflowEngine.load_from_json(request.workflow_config)
+        engine = WorkflowEngine.load_from_json(request.workflow_config, session_manager=session_manager)
         stream = engine.run(request.input_data, session_id=request.session_id)
 
         def event_stream():
