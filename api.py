@@ -22,7 +22,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://mi-porfolio-alpha-five.vercel.app"],
     allow_credentials= True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,7 +45,7 @@ def read_root():
 def run_workflow(request: WorkflowRequest):
     try:
         logger.info(f'Received workflow execution request | session: {request.session_id}')
-        engine = WorkflowEngine.load_from_json(request.workflow_config)
+        engine = WorkflowEngine.load_from_json(request.workflow_config, session_manager=session_manager)
         stream = engine.run(request.input_data, session_id=request.session_id)
 
         def event_stream():
