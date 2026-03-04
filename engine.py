@@ -85,12 +85,12 @@ class WorkflowEngine:
         return connections
     
     @classmethod
-    def load_from_json(cls, file_path: str) -> 'WorkflowEngine':
+    def load_from_json(cls, file_path: str, session_manager=None) -> 'WorkflowEngine':
         """Loads a workflow configuration from a JSON file and constructs the engine."""
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
-        engine = cls()
+        engine = cls(session_manager=session_manager)
         engine.flow_name = data.get('flow_name', 'Unnamed Workflow')
        
         for node_data in data['nodes']:
