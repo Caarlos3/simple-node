@@ -1,11 +1,6 @@
 {
-    "flow_name": "AI Greeting Transletor",
+    "flow_name": "Portfolio Chatbot",
     "nodes": [
-        {
-            "id": "router",
-            "type": "RouterNode",
-            "params": {}
-        },
         {
             "id": "reader",
             "type": "FileReadNode",
@@ -17,16 +12,12 @@
             "type": "LLMNode",
             "params": {
                 "model": "gpt-4o-mini",
-                "system_prompt": "You are the professional AI assistant for Carlos, a Full Stack Developer.",
+                "system_prompt": "You are the professional AI assistant for Carlos, a Full Stack Ai Developer.",
                 "temperature": 0.3
         }}
     ],
 
     "connections": [
-        {
-            "from": "router",
-            "to": "reader"
-        },
         {
             "from": "reader",
             "to": "llm"
