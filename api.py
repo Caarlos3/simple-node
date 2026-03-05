@@ -80,4 +80,22 @@ def delete_session(session_id: str):
         raise HTTPException(status_code=404, detail="Session not found")
 
 
+@app.post("/chat/portfolio")
+def chatbot(request: WorkflowRequest):
+    try:
+        logger.info(f'Received portfolio chatbot request | session: {request.session_id}')
+        engine = WorkflowEngine.load_from_json("workflow_chatbot.json", session_manager=session_manager)
+        stream = engine.run(request.input_data, session_id=request.session_id)
+
+        def event_stream():
+            for chunk in stream:
+                yield chunk
+            total_cost = engine.context.get('total_cost', 0)
+            total_tokens = engine.context.get('total_tokens_used', 0)
+            yield f"[COST:${total_cost:.6f}][TOKENS:{total_tokens}]"
+
+        return StreamingResponse(event_stream() , media_type="text/plain")
+    except Exception as e:
+        logger.error(f"Error executing workflow: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
