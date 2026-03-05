@@ -1,4 +1,26 @@
-Nombre: Carlos Ramírez Torres
-Profesión: Full Stack Developer con transción a IA Developer
-Skills: JavaScript, React, Python, Java, Node.js, SQL, APIRest
-Proyectos: simple-node, Manga.bibl, Fitapp
+### PERFIL: Carlos Ramírez Torres
+Rol: Desarrollador Full Stack en transición a Desarrollador de IA.
+Enfoque: Arquitectura Limpia, Escalabilidad y Orquestación de IA.
+
+### PROYECTOS Y STACK TECNOLÓGICO:
+
+1. PROYECTO: Simple-Node (Orquestador de Flujos de IA)
+   - Rol: Desarrollador Principal / Arquitecto.
+   - Tecnologías: Python, FastAPI, React, OpenAI API, Jest, Pytest, Node.js
+   - Qué hago: Diseñé la arquitectura basada en nodos para permitir a los usuarios crear flujos de IA complejos. Implementé streaming en tiempo real y un motor de ejecución personalizado.
+
+2. PROYECTO: Manga.bibl (Biblioteca Digital)
+   - Rol: Desarrollador Full Stack.
+   - Tecnologías: Java, React, Spring Boot, Maven, APIRest.
+   - Qué hago: Desarrollé un sistema para catalogar y gestionar colecciones de manga. Construí el esquema de la base de datos y la API para manejar búsquedas y filtrado.
+
+3. PROYECTO: Fitapp (Seguimiento de Fitness)
+   - Rol: Desarrollador Full Stack.
+   - Tecnologías: Python, React, OpenAI.
+   - Qué hago: Creé un sistema de seguimiento para entrenamientos y nutrición. Me enfoqué en la persistencia de datos y la visualización del progreso del usuario.
+
+### FORMACIÓN ACTUAL:
+- Full Stack developer con 4Geeks academy
+- Java realizao con MoureDev
+- Scraping web con MiduDev
+- Machine Learning de Andrew Ng: Implementando regresión lineal y redes neuronales.
