@@ -4,6 +4,7 @@ import requests
 from openai import OpenAI
 from typing import TYPE_CHECKING
 import tiktoken 
+import numpy as np
 
 if TYPE_CHECKING:
     from engine import WorkflowEngine
@@ -283,9 +284,42 @@ class WebSearchNode(BaseNode):
             'max_results': self.max_results
         }
         return data
+    
 
+class CostPredictNode(BaseNode):
+    """
+    CostPredictNode
 
-            
+    A simple linear-regression-style node that predicts an estimated message cost
+    using lightweight, hand-crafted features.
+
+    Features:
+    - x1: number of words in the user input
+    - x2: language multiplier (heuristic: 1.5 for Spanish-like text, 1.0 otherwise)
+
+    This node currently performs inference only (no training / gradient descent yet).
+    """
+
+    def __init__(self, name, w, b):
+        super().__init__(name)
+        self.w = w
+        self.b = b
+    
+    def execute(self, input_data, engine: 'WorkflowEngine'):
+        logger.info(f'Executing node {self.name} to predirct the cost')
+        y = engine.context.get('conversation_history', 0)
+        words = input_data.split()
+        x1 = len(words)
+        x2 = 0
+        if "el" in words or "la" in words or "que" in words:
+            x2 = 1.5
+        else:
+            x2 = 1
+        x = np.array([[x1],[x2]])
+        f = np.dot(self.w, x) + self.b 
+        
+        return float(f)
+
           
 
 class RouterNode(BaseNode):
