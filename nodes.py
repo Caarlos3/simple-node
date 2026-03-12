@@ -300,14 +300,13 @@ class CostPredictNode(BaseNode):
     This node currently performs inference only (no training / gradient descent yet).
     """
 
-    def __init__(self, name, w, b):
+    def __init__(self, name, w, b ):
         super().__init__(name)
-        self.w = w
-        self.b = b
-    
+        self.w = np.array(w).reshape(2, 1)
+        self.b = float(b)
+
     def execute(self, input_data, engine: 'WorkflowEngine'):
         logger.info(f'Executing node {self.name} to predirct the cost')
-        y = engine.context.get('conversation_history', 0)
         words = input_data.split()
         x1 = len(words)
         x2 = 0
@@ -315,7 +314,7 @@ class CostPredictNode(BaseNode):
             x2 = 1.5
         else:
             x2 = 1
-        x = np.array([[x1],[x2]])
+        x = np.array([[x1,x2]])
         f = np.dot(self.w, x) + self.b 
         
         return float(f)
@@ -372,6 +371,7 @@ def create_node_from_dict(data: dict) -> BaseNode:
         'RouterNode': RouterNode,
         'WebSearchNode': WebSearchNode,
         'MemoryNode': MemoryNode,
+        'CostPredictNode': CostPredictNode
     }
 
     if node_type not in node_classes:
