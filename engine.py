@@ -2,8 +2,9 @@ import logging
 import json
 import os
 import time 
-from nodes import BaseNode, create_node_from_dict 
+from nodes import BaseNode, create_node_from_dict, CostPredictNode
 from session_manager import SessionManager
+
 
 
 logger = logging.getLogger(__name__)
@@ -57,6 +58,11 @@ class WorkflowEngine:
                     yield result
             duration = time.time() - start_time
             logger.info(f'Node {node.name} executed in {duration:.3f}s')
+        for node in self.nodes:
+            if isinstance(node, CostPredictNode):
+               last_cost = self.context.get('last_message_cost')
+               if last_cost:
+                   node.train(self.context['user_input'], last_cost)
 
         if session_id:
             self.session_manager.save_history(session_id, self.context)

@@ -202,6 +202,7 @@ class LLMNode(BaseNode):
             engine.context['total_tokens_used'] = previous_tokens + total_tokens
             previous_cost = engine.context.get('total_cost', 0)
             engine.context['total_cost'] = previous_cost + cost
+            engine.context['last_message_cost'] = cost
             history = engine.context.get('conversation_history', [])
             history.append({"role": "user", "content": input_data})
             history.append({"role": "assistant", "content": acumulate_text})
@@ -305,26 +306,29 @@ class CostPredictNode(BaseNode):
         self.w = np.array(w).reshape(2, 1)
         self.b = float(b)
 
-    def execute(self, input_data, engine: 'WorkflowEngine'):
-        logger.info(f'Executing node {self.name} to predirct the cost')
+    def _get_features(self, input_data):
         words = input_data.split()
         x1 = len(words)
-        x2 = 0
-        if "el" in words or "la" in words or "que" in words:
-            x2 = 1.5
-        else:
-            x2 = 1
-        x = np.array([[x1,x2]])
-        f = np.dot(self.w, x) + self.b 
+        x2 = 1.5 if any(w in words for w in ["el", "la", "que"]) else 1.0
+        return np.array([[x1, x2]])
+
+    def execute(self, input_data, engine: 'WorkflowEngine'):
+        logger.info(f'Executing node {self.name} to predirct the cost')
+        x = self._get_features(input_data)
+        f = np.dot(x, self.w) + self.b 
         
         return float(f)
     
     def train(self, input_data, real_cost, alpha=0.001):
-        
 
+        x = self._get_features(input_data)
+        f_wb = np.dot(x, self.w) + self.b
+        error = f_wb - real_cost
+        dj_dw = error * x.T
+        dj_db = error
+        self.w = self.w - alpha * dj_dw
+        self.b = self.b - alpha * dj_db
 
-
-          
 
 class RouterNode(BaseNode):
 
