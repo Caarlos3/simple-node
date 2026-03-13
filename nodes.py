@@ -318,6 +318,11 @@ class CostPredictNode(BaseNode):
         f = np.dot(self.w, x) + self.b 
         
         return float(f)
+    
+    def train(self, input_data, real_cost, alpha=0.001):
+        
+
+
 
           
 
