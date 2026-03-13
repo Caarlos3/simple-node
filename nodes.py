@@ -308,8 +308,8 @@ class CostPredictNode(BaseNode):
 
     def _get_features(self, input_data):
         words = input_data.split()
-        x1 = len(words)
-        x2 = 1.5 if any(w in words for w in ["el", "la", "que"]) else 1.0
+        x1 = len(words) / 500.0
+        x2 = (1.5 if any(w in words for w in ["el", "la", "que"]) else 1.0) -1
         return np.array([[x1, x2]])
 
     def execute(self, input_data, engine: 'WorkflowEngine'):
@@ -319,8 +319,7 @@ class CostPredictNode(BaseNode):
         
         return float(f)
     
-    def train(self, input_data, real_cost, alpha=0.001):
-
+    def train(self, input_data, real_cost, alpha=0.01):
         x = self._get_features(input_data)
         f_wb = np.dot(x, self.w) + self.b
         error = f_wb - real_cost
@@ -328,6 +327,7 @@ class CostPredictNode(BaseNode):
         dj_db = error
         self.w = self.w - alpha * dj_dw
         self.b = self.b - alpha * dj_db
+        logger.info(f'Node {self.name} trained | error: {float(error):.4f} | w: {self.w.flatten()} | b: {self.b:.4f}')
 
 
 class RouterNode(BaseNode):
