@@ -395,6 +395,12 @@ def create_node_from_dict(data: dict) -> BaseNode:
             name=node_id,
             max_turns=params.get('max_turns', 5)
         )
+    elif node_type == 'CostPredictNode':
+        return CostPredictNode(
+            name=readable_name,
+            w=params.get('w',[0.0, 0.0]),
+            b=params.get('b', 0.0)
+        )
     else:
         return node_classes[node_type](name=readable_name)
     
