@@ -1,6 +1,14 @@
 {
-    "flow_name": "AI Greeting Transletor",
+    "flow_name": "AI Greeting Transletor with Cost Prediction",
     "nodes": [
+        {
+            "id": "cost_predictor",
+            "type": "CostPredictNode",
+            "params":{
+                "w": [0.0, 0.0],
+                "b": 0.0
+            }
+        },
         {
             "id": "router",
             "type": "RouterNode",
@@ -23,6 +31,10 @@
     ],
 
     "connections": [
+        {
+            "from": "cost_predictor",
+            "to": "router"
+        },
         {
             "from": "router",
             "to": "reader"

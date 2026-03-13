@@ -315,7 +315,10 @@ class CostPredictNode(BaseNode):
     def execute(self, input_data, engine: 'WorkflowEngine'):
         logger.info(f'Executing node {self.name} to predirct the cost')
         x = self._get_features(input_data)
-        f = np.dot(x, self.w) + self.b 
+        f = np.dot(x, self.w) + self.b
+
+        engine.context['predicted_cost'] = float(f)
+        return input_data
         
         return float(f)
     
@@ -327,8 +330,7 @@ class CostPredictNode(BaseNode):
         dj_db = error
         self.w = self.w - alpha * dj_dw
         self.b = self.b - alpha * dj_db
-        logger.info(f'Node {self.name} trained | error: {float(error):.4f} | w: {self.w.flatten()} | b: {self.b:.4f}')
-
+        logger.info(f'Node {self.name} trained | error: {float(error):.4f} | w: {self.w.flatten()} | b: {float(self.b):.4f}')
 
 class RouterNode(BaseNode):
 
