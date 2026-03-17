@@ -303,6 +303,7 @@ class CostPredictNode(BaseNode):
 
     def __init__(self, name, w, b ):
         super().__init__(name)
+        self.id = name
         self.w = np.array(w).reshape(2, 1)
         self.b = float(b)
 
