@@ -1,6 +1,17 @@
 {
-    "flow_name": "AI Greeting Transletor",
+    "flow_name": "AI Greeting Translator with Cost Prediction",
     "nodes": [
+        {
+            "id": "Cost Predictor",
+            "type": "CostPredictNode",
+            "params": {
+                "w": [
+                    3.2772535709858746e-08,
+                    1.246018223053672e-06
+                ],
+                "b": 3.6545364461073434e-06
+            }
+        },
         {
             "id": "router",
             "type": "RouterNode",
@@ -11,7 +22,8 @@
             "type": "FileReadNode",
             "params": {
                 "file_path": "my_info.txt"
-        }},
+            }
+        },
         {
             "id": "llm",
             "type": "LLMNode",
@@ -19,10 +31,14 @@
                 "model": "gpt-4o-mini",
                 "system_prompt": "You are the professional AI assistant for Carlos, a Full Stack Developer.",
                 "temperature": 0.3
-        }}
+            }
+        }
     ],
-
     "connections": [
+        {
+            "from": "cost_predictor",
+            "to": "router"
+        },
         {
             "from": "router",
             "to": "reader"

@@ -1,18 +1,20 @@
 {
-    "user_input": "ahora?",
+    "user_input": "que es un demogorgon?",
+    "predicted_cost": 2.3837577392656317e-06,
     "needs_ai": true,
     "skip_reader": false,
-    "file_content": "Nombre: Carlos Ramírez Torres\nProfesión: Full Stack Developer con transción a IA Developer\nSkills: JavaScript, React, Python, Java, Node.js, SQL, APIRest\nProyectos: simple-node, Manga.bibl, Fitapp\n",
-    "total_tokens_used": 125,
-    "total_cost": 3.2699999999999995e-05,
+    "file_content": "### PERFIL: Carlos Ramírez Torres\nRol: Desarrollador Full Stack en transición a Desarrollador de IA.\nEnfoque: Arquitectura Limpia, Escalabilidad y Orquestación de IA.\n\n### PROYECTOS Y STACK TECNOLÓGICO:\n\n1. PROYECTO: Simple-Node (Orquestador de Flujos de IA)\n   - Rol: Desarrollador Principal / Arquitecto.\n   - Tecnologías: Python, FastAPI, React, OpenAI API, Jest, Pytest, Node.js\n   - Qué hago: Diseñé la arquitectura basada en nodos para permitir a los usuarios crear flujos de IA complejos. Implementé streaming en tiempo real y un motor de ejecución personalizado.\n\n2. PROYECTO: Manga.bibl (Biblioteca Digital)\n   - Rol: Desarrollador Full Stack.\n   - Tecnologías: Java, React, Spring Boot, Maven, APIRest.\n   - Qué hago: Desarrollé un sistema para catalogar y gestionar colecciones de manga. Construí el esquema de la base de datos y la API para manejar búsquedas y filtrado.\n\n3. PROYECTO: Fitapp (Seguimiento de Fitness)\n   - Rol: Desarrollador Full Stack.\n   - Tecnologías: Python, React, OpenAI.\n   - Qué hago: Creé un sistema de seguimiento para entrenamientos y nutrición. Me enfoqué en la persistencia de datos y la visualización del progreso del usuario.\n\n### FORMACIÓN ACTUAL:\n- Full Stack developer con 4Geeks academy\n- Java realizao con MoureDev\n- Scraping web con MiduDev\n- Machine Learning de Andrew Ng: Implementando regresión lineal y redes neuronales.",
+    "total_tokens_used": 564,
+    "total_cost": 0.0001539,
+    "last_message_cost": 0.0001539,
     "conversation_history": [
         {
             "role": "user",
-            "content": "ahora?"
+            "content": "que es un demogorgon?"
         },
         {
             "role": "assistant",
-            "content": "¡Hola, Carlos! ¿En qué puedo ayudarte hoy? Si tienes alguna pregunta o necesitas asistencia con un proyecto, no dudes en decírmelo."
+            "content": "Un Demogorgon es un personaje ficticio que aparece en la serie de televisión \"Stranger Things\". Es una criatura de otro mundo, conocida como un \"monstruo\" que proviene del \"Upside Down\", una dimensión paralela. En la serie, el Demogorgon tiene una apariencia aterradora, con una cabeza que se abre en forma de flor y es capaz de causar terror y destrucción. Además, se ha convertido en un ícono de la cultura pop desde el estreno de la serie. \n\nEn el contexto de los juegos de rol, como \"Dungeons & Dragons\", el Demogorgon también es un poderoso demonio y uno de los príncipes de los demonios, conocido por su naturaleza caótica y destructiva."
         }
     ]
 }

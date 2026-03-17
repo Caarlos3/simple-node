@@ -63,6 +63,7 @@ class WorkflowEngine:
                last_cost = self.context.get('last_message_cost')
                if last_cost:
                    node.train(self.context['user_input'], last_cost)
+                   self._save_workflow_state()
 
         if session_id:
             self.session_manager.save_history(session_id, self.context)
@@ -89,6 +90,31 @@ class WorkflowEngine:
                 'to': node_ids[i + 1]
             })
         return connections
+    
+    def _save_workflow_state(self):
+        """
+        Upload JSON to actual node weigth
+        """
+        try:
+            with open('workflow_example.json', 'r') as f:
+                data = json.load(f)
+            updated_node = []
+            for node in self.nodes:
+                if hasattr(node, 'to_dict'):
+                    updated_node.append(node.to_dict())
+                else:
+                    original_node = next((n for n in data['nodes'] if n ['id'] == node.id), None)
+                    if original_node:
+                        updated_node.append(original_node)
+            data['nodes'] = updated_node
+
+            with open('workflow_example.json', 'w') as f:
+                json.dump(data, f, indent=4)
+
+            logger.info(f"Workflow state persisted to workflow_example.json")
+        
+        except Exception as e:
+            logger.error(f"Error persisting workflow state: {e}")
     
     @classmethod
     def load_from_json(cls, file_path: str, session_manager=None) -> 'WorkflowEngine':

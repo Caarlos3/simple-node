@@ -303,6 +303,7 @@ class CostPredictNode(BaseNode):
 
     def __init__(self, name, w, b ):
         super().__init__(name)
+        self.id = name
         self.w = np.array(w).reshape(2, 1)
         self.b = float(b)
 
@@ -316,9 +317,8 @@ class CostPredictNode(BaseNode):
         logger.info(f'Executing node {self.name} to predirct the cost')
         x = self._get_features(input_data)
         f = np.dot(x, self.w) + self.b 
-        
-        return float(f)
-    
+        engine.context['predicted_cost'] = float(f)
+        return input_data
     def train(self, input_data, real_cost, alpha=0.01):
         x = self._get_features(input_data)
         f_wb = np.dot(x, self.w) + self.b
@@ -326,9 +326,23 @@ class CostPredictNode(BaseNode):
         dj_dw = error * x.T
         dj_db = error
         self.w = self.w - alpha * dj_dw
-        self.b = self.b - alpha * dj_db
-        logger.info(f'Node {self.name} trained | error: {float(error):.4f} | w: {self.w.flatten()} | b: {self.b:.4f}')
+        self.b = float(self.b - alpha * dj_db)
+        logger.info(
+        f'Node {self.name} trained | '
+        f'error: {float(error):.6f} | '
+        f'w: {self.w.flatten().tolist()} | '
+        f'b: {float(self.b):.6f}'
+    )
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "type": "CostPredictNode",
+            "params": {
+                "w": self.w.flatten().tolist(),
+                "b": float(self.b)
+            }
+        }
 
 class RouterNode(BaseNode):
 
