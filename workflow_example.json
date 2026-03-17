@@ -1,15 +1,12 @@
 {
-    "flow_name": "AI Greeting Translator with Cost Prediction",
+    "flow_name": "AI Greeting Transletor with Cost Prediction",
     "nodes": [
         {
-            "id": "Cost Predictor",
+            "id": "cost_predictor",
             "type": "CostPredictNode",
-            "params": {
-                "w": [
-                    3.2772535709858746e-08,
-                    1.246018223053672e-06
-                ],
-                "b": 3.6545364461073434e-06
+            "params":{
+                "w": [0.0, 0.0],
+                "b": 0.0
             }
         },
         {

@@ -1,20 +1,20 @@
 {
-    "user_input": "que es un demogorgon?",
-    "predicted_cost": 2.3837577392656317e-06,
+    "user_input": "sabes quien es andrew ng?",
+    "predicted_cost": 0.0,
     "needs_ai": true,
     "skip_reader": false,
     "file_content": "### PERFIL: Carlos Ramírez Torres\nRol: Desarrollador Full Stack en transición a Desarrollador de IA.\nEnfoque: Arquitectura Limpia, Escalabilidad y Orquestación de IA.\n\n### PROYECTOS Y STACK TECNOLÓGICO:\n\n1. PROYECTO: Simple-Node (Orquestador de Flujos de IA)\n   - Rol: Desarrollador Principal / Arquitecto.\n   - Tecnologías: Python, FastAPI, React, OpenAI API, Jest, Pytest, Node.js\n   - Qué hago: Diseñé la arquitectura basada en nodos para permitir a los usuarios crear flujos de IA complejos. Implementé streaming en tiempo real y un motor de ejecución personalizado.\n\n2. PROYECTO: Manga.bibl (Biblioteca Digital)\n   - Rol: Desarrollador Full Stack.\n   - Tecnologías: Java, React, Spring Boot, Maven, APIRest.\n   - Qué hago: Desarrollé un sistema para catalogar y gestionar colecciones de manga. Construí el esquema de la base de datos y la API para manejar búsquedas y filtrado.\n\n3. PROYECTO: Fitapp (Seguimiento de Fitness)\n   - Rol: Desarrollador Full Stack.\n   - Tecnologías: Python, React, OpenAI.\n   - Qué hago: Creé un sistema de seguimiento para entrenamientos y nutrición. Me enfoqué en la persistencia de datos y la visualización del progreso del usuario.\n\n### FORMACIÓN ACTUAL:\n- Full Stack developer con 4Geeks academy\n- Java realizao con MoureDev\n- Scraping web con MiduDev\n- Machine Learning de Andrew Ng: Implementando regresión lineal y redes neuronales.",
-    "total_tokens_used": 564,
-    "total_cost": 0.0001539,
-    "last_message_cost": 0.0001539,
+    "total_tokens_used": 510,
+    "total_cost": 0.0001215,
+    "last_message_cost": 0.0001215,
     "conversation_history": [
         {
             "role": "user",
-            "content": "que es un demogorgon?"
+            "content": "sabes quien es andrew ng?"
         },
         {
             "role": "assistant",
-            "content": "Un Demogorgon es un personaje ficticio que aparece en la serie de televisión \"Stranger Things\". Es una criatura de otro mundo, conocida como un \"monstruo\" que proviene del \"Upside Down\", una dimensión paralela. En la serie, el Demogorgon tiene una apariencia aterradora, con una cabeza que se abre en forma de flor y es capaz de causar terror y destrucción. Además, se ha convertido en un ícono de la cultura pop desde el estreno de la serie. \n\nEn el contexto de los juegos de rol, como \"Dungeons & Dragons\", el Demogorgon también es un poderoso demonio y uno de los príncipes de los demonios, conocido por su naturaleza caótica y destructiva."
+            "content": "Sí, Andrew Ng es un destacado investigador y educador en el campo de la inteligencia artificial y el aprendizaje automático. Es cofundador de Google Brain y ha sido profesor en la Universidad de Stanford. También es conocido por su trabajo en la educación en línea, especialmente a través de su plataforma Coursera, donde ofrece cursos sobre aprendizaje automático y otros temas relacionados con la IA. Su curso de Machine Learning es uno de los más populares y ha ayudado a muchas personas a introducirse en el campo."
         }
     ]
 }
