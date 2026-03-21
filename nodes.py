@@ -5,6 +5,7 @@ from openai import OpenAI
 from typing import TYPE_CHECKING
 import tiktoken 
 import numpy as np
+from train_security import SUSPICIOUS_KEYWORDS, special_chars
 
 if TYPE_CHECKING:
     from engine import WorkflowEngine
@@ -321,7 +322,6 @@ class CostPredictNode(BaseNode):
         engine.context['predicted_cost'] = float(f)
         return input_data
         
-        return float(f)
     
     def train(self, input_data, real_cost, alpha=0.01):
         x = self._get_features(input_data)
@@ -332,6 +332,21 @@ class CostPredictNode(BaseNode):
         self.w = self.w - alpha * dj_dw
         self.b = self.b - alpha * dj_db
         logger.info(f'Node {self.name} trained | error: {float(error):.4f} | w: {self.w.flatten()} | b: {float(self.b):.4f}')
+
+
+class AnomalyDetectorNode(BaseNode):
+    def __init__(self, name, threshold):
+        super().__init__(name)
+        self.threshold = threshold
+    
+    def _get_features(self, text):
+        x1 = len(text) / 500.0
+        text = text.lower()
+        count_keywords = sum(1 for word in SUSPICIOUS_KEYWORDS if word in text)
+        x2 = count_keywords
+        x3 = sum(1 for char in special_chars if char in text)
+        return np.array([[x1, x2, x3]])
+
 
 class RouterNode(BaseNode):
 
