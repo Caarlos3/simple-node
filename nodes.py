@@ -367,7 +367,10 @@ class AnomalyDetectorNode(BaseNode):
     
     def execute(self, input_data, engine):
         x = self._get_features(input_data)
-        prob = 0.5
+        Z1, A1, Z2, A2 = self._forward(x)
+        prob = float(A2)
+        engine.context['anomaly_prob'] = prob
+        logger.info(f"Node {self.name} | Anomaly prob: {prob:.4f} | Threshold: {self.threshold}")
         if prob > self.threshold:
             raise ValueError(f'Security Anomaly Detected: Request Bloqued')
         else:
