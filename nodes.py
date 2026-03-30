@@ -337,6 +337,7 @@ class CostPredictNode(BaseNode):
 class AnomalyDetectorNode(BaseNode):
     def __init__(self, name, threshold):
         super().__init__(name)
+        self.id = name
         self.threshold = threshold
     
     def _get_features(self, text):
@@ -346,6 +347,14 @@ class AnomalyDetectorNode(BaseNode):
         x2 = count_keywords
         x3 = sum(1 for char in special_chars if char in text)
         return np.array([[x1, x2, x3]])
+    
+    def execute(self, input_data, engine):
+        x = self._get_features(input_data)
+        prob = 0.5
+        if prob > self.threshold:
+            raise ValueError(f'Security Anomaly Detected: Request Bloqued')
+        else:
+            return input_data
 
 
 class RouterNode(BaseNode):
