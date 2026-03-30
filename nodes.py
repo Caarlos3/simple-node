@@ -339,7 +339,24 @@ class AnomalyDetectorNode(BaseNode):
         super().__init__(name)
         self.id = name
         self.threshold = threshold
+        self.W1 = np.random.randn(3, 3) * 0.01
+        self.b1 = np.zeros((1, 3))
+        self.W2 = np.random.randn(3, 1) * 0.01
+        self.b2 = np.zeros((1, 1))
     
+    def _relu(self, z):
+        return np.maximum(0 ,z)
+        
+    def _sigmoid(self, z):
+        return 1 / (1 + np.exp(-z))
+    
+    def _forward(self, x):
+        Z1 = np.dot(x, self.W1) + self.b1
+        A1 = self._relu(Z1)
+        Z2 = np.dot(A1, self.W2) + self.b2
+        A2 = self._sigmoid(Z2)
+        return Z1, A1, Z2, A2
+
     def _get_features(self, text):
         x1 = len(text) / 500.0
         text = text.lower()
