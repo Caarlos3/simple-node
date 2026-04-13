@@ -96,3 +96,20 @@ def chatbot(request: WorkflowRequest):
         logger.error(f"Error executing workflow: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/chat/rafa")
+def chatbot_rafa(request: WorkflowRequest):
+    try:
+        logger.info(f'Received rafa chatbot request | session: {request.session_id}')
+        engine = WorkflowEngine.load_from_json("workflow_rafa.json", session_manager=session_manager)
+        stream = engine.run(request.input_data, session_id=request.session_id)
+
+        def event_stream():
+            for chunk in stream:
+                yield chunk
+
+        return StreamingResponse(event_stream(), media_type="text/plain")
+
+    except Exception as e:
+        logger.error(f"Error executing workflow: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
