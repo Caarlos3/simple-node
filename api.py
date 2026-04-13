@@ -100,7 +100,7 @@ def chatbot(request: WorkflowRequest):
 def chatbot_rafa(request: WorkflowRequest):
     try:
         logger.info(f'Received rafa chatbot request | session: {request.session_id}')
-        engine = WorkflowEngine.load_from_json("workflow_rafa.json", session_manager=session_manager)
+        engine = WorkflowEngine.load_from_json("workflow_chatbot_rafa.json", session_manager=session_manager)
         stream = engine.run(request.input_data, session_id=request.session_id)
 
         def event_stream():
